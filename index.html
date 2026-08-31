@@ -255,57 +255,117 @@
     margin:clamp(46px,8vh,84px) 0;
   }
 
-  /* ── RECUPERAR ──────────────────────────── */
-  .recuperar{
+  /* ── RECUPERAR (grid numerado) ────────────── */
+  .recuperar-intro{
+    font-family:var(--serif);
+    font-size:clamp(1.15rem,4vw,1.55rem);
+    font-weight:400;
+    line-height:1.45;
+    color:var(--crema);
+    margin-bottom:clamp(32px,5vh,48px);
+    max-width:28em;
+  }
+  .recuperar-grid{
     list-style:none;
-    margin:clamp(30px,5vh,48px) 0 0;
-  }
-  .recuperar li{
-    font-size:clamp(1.12rem,4.2vw,1.6rem);
-    line-height:1.35;
-    padding:.66em 0;
-    border-bottom:1px solid var(--crema-18);
-    color:var(--crema);
-  }
-  .recuperar li:first-child{border-top:1px solid var(--crema-18)}
-  .recuperar li b{font-weight:300;color:var(--crema-45)}
-
-  /* ── EL DÍA ─────────────────────────────── */
-  .rotulo{
-    font-size:.72rem;
-    letter-spacing:.3em;
-    text-indent:.3em;
-    color:var(--crema-45);
-    margin-bottom:clamp(26px,4vh,40px);
-  }
-
-  .dia{list-style:none}
-  .dia li{
     display:grid;
-    grid-template-columns:5.2em 1fr;
-    gap:1.1em;
-    align-items:baseline;
-    padding:.78em 0;
-    border-bottom:1px solid var(--crema-18);
+    grid-template-columns:1fr 1fr;
+    gap:0;
   }
-  .dia li:first-child{border-top:1px solid var(--crema-18)}
-  .dia .hora{
-    font-size:.86rem;letter-spacing:.12em;
-    color:var(--crema-45);font-variant-numeric:tabular-nums;
+  .recuperar-grid li{
+    display:flex;align-items:baseline;gap:clamp(10px,2vw,16px);
+    padding:clamp(16px,2.5vh,24px) 0;
+    border-top:1px solid var(--crema-18);
   }
-  .dia .que{
-    font-size:clamp(1.05rem,3.9vw,1.4rem);
+  .recuperar-grid li .num{
+    font-family:var(--serif);
+    font-size:clamp(1.1rem,3vw,1.4rem);
+    color:var(--ambar);
+    font-style:italic;
+    flex-shrink:0;
+    min-width:1.8em;
+  }
+  .recuperar-grid li .txt{
+    font-size:clamp(.78rem,.72rem + .3vw,.88rem);
+    letter-spacing:.12em;
     color:var(--crema);
+    line-height:1.4;
   }
-  .dia li.abierto .hora,
-  .dia li.abierto .que{color:var(--ambar)}
-  .dia li.abierto{border-bottom-color:transparent}
+  @media(max-width:560px){
+    .recuperar-grid{grid-template-columns:1fr}
+  }
+
+  /* ── TIMELINE (tarjetas) ────────────────── */
+  .timeline-intro{
+    text-align:center;
+    margin-bottom:clamp(36px,6vh,56px);
+  }
+  .timeline-intro .titulo-editorial{
+    margin-bottom:clamp(16px,2vh,24px);
+  }
+  .timeline-intro p{
+    margin-inline:auto;
+    max-width:24em;
+    text-align:center;
+  }
+
+  .timeline{
+    display:flex;flex-direction:column;
+    gap:clamp(16px,2.5vw,24px);
+  }
+  .tcard{
+    border-radius:20px;
+    padding:clamp(28px,4vw,40px);
+    position:relative;
+    overflow:hidden;
+    min-height:clamp(220px,30vw,300px);
+    display:flex;flex-direction:column;
+    justify-content:flex-end;
+  }
+  .tcard .tnum{
+    position:absolute;
+    top:clamp(20px,3vw,32px);left:clamp(24px,4vw,40px);
+    font-family:var(--serif);
+    font-size:clamp(1.8rem,5vw,2.6rem);
+    font-style:italic;
+    opacity:.35;
+  }
+  .tcard .ticon{
+    position:absolute;
+    top:clamp(20px,3vw,32px);right:clamp(24px,4vw,40px);
+    font-size:1.4rem;opacity:.5;
+  }
+  .tcard .twhen{
+    font-size:.68rem;
+    letter-spacing:.24em;
+    margin-bottom:.6em;
+  }
+  .tcard .twhat{
+    font-family:var(--serif);
+    font-size:clamp(1.6rem,5.5vw,2.4rem);
+    font-weight:400;
+    line-height:1.15;
+    margin-bottom:.5em;
+  }
+  .tcard .tdesc{
+    font-size:clamp(.88rem,.82rem + .3vw,1rem);
+    line-height:1.5;
+    opacity:.8;
+    max-width:28em;
+  }
+
+  .tcard.tc-verde{background:var(--verde-alto);color:var(--crema)}
+  .tcard.tc-terra{background:#A0614B;color:#FFF5E8}
+  .tcard.tc-crema{background:var(--crema);color:var(--verde)}
+  .tcard.tc-dorado{background:#C4A265;color:var(--verde)}
+  .tcard.tc-oscuro{background:#0F1F17;color:var(--crema)}
 
   .liando{
-    margin-top:1.6em;
+    margin-top:clamp(28px,4vh,40px);
     font-size:var(--paso);
     color:var(--crema-45);
     max-width:30em;
+    text-align:center;
+    margin-inline:auto;
   }
 
   /* ── CIERRE ─────────────────────────────── */
@@ -536,35 +596,69 @@
 <section class="marco">
   <p class="seccion-eyebrow surge">LO QUE VENIMOS A RECUPERAR</p>
   <h2 class="titulo-editorial surge">Una forma<br>de estar.</h2>
+  <p class="recuperar-intro surge">No queremos volver atrás. Queremos volver a hacer algunas cosas de una manera mucho más natural.</p>
 
-  <ul class="recuperar">
-    <li class="surge"><b>Recuperar</b> el vermú.</li>
-    <li class="surge"><b>Recuperar</b> las partidas.</li>
-    <li class="surge"><b>Recuperar</b> el hablar sin mirar el móvil.</li>
-    <li class="surge"><b>Recuperar</b> el comer juntos.</li>
-    <li class="surge"><b>Recuperar</b> las conversaciones que no tienen prisa.</li>
-    <li class="surge"><b>Recuperar</b> el «vamos a tomar una última».</li>
-    <li class="surge"><b>Recuperar</b> el quedarnos aunque ya no haya ninguna razón para hacerlo.</li>
-    <li class="surge"><b>Recuperar</b> ese punto en el que el tiempo deja de importar.</li>
+  <ul class="recuperar-grid">
+    <li class="surge"><span class="num">01</span><span class="txt">RECUPERAR EL VERMÚ</span></li>
+    <li class="surge"><span class="num">02</span><span class="txt">RECUPERAR LAS PARTIDAS</span></li>
+    <li class="surge"><span class="num">03</span><span class="txt">RECUPERAR HABLAR SIN MIRAR EL MÓVIL</span></li>
+    <li class="surge"><span class="num">04</span><span class="txt">RECUPERAR COMER JUNTOS</span></li>
+    <li class="surge"><span class="num">05</span><span class="txt">RECUPERAR LAS CONVERSACIONES SIN PRISA</span></li>
+    <li class="surge"><span class="num">06</span><span class="txt">RECUPERAR EL «VAMOS A TOMAR UNA ÚLTIMA»</span></li>
+    <li class="surge"><span class="num">07</span><span class="txt">RECUPERAR QUEDARNOS AUNQUE NO HAYA RAZÓN</span></li>
+    <li class="surge"><span class="num">08</span><span class="txt">RECUPERAR ESE PUNTO EN EL QUE EL TIEMPO DEJA DE IMPORTAR</span></li>
   </ul>
 </section>
 
 <hr class="marco">
 
 <!-- EL DÍA -->
-<section id="el-plan" class="marco">
-  <p class="seccion-eyebrow surge">CÓMO SE VA LIANDO</p>
-  <h2 class="titulo-editorial surge">El plan.</h2>
-  <ul class="dia">
-    <li class="surge"><span class="hora">11:30</span><span class="que">Un vermú</span></li>
-    <li class="surge"><span class="hora">12:30</span><span class="que">Una partida de guiñote</span></li>
-    <li class="surge"><span class="hora">14:00</span><span class="que">Algo de comer</span></li>
-    <li class="surge"><span class="hora">15:30</span><span class="que">Un bingo</span></li>
-    <li class="surge"><span class="hora">17:00</span><span class="que">Una copa</span></li>
-    <li class="surge"><span class="hora">18:30</span><span class="que">Música y baile</span></li>
-    <li class="surge abierto"><span class="hora">??:??</span><span class="que">Un rato más</span></li>
-  </ul>
-  <p class="liando surge">Una cosa lleva a la otra. Exactamente como ocurría antes en esas sobremesas que empezaban después de comer y nadie sabía cuándo iban a terminar.</p>
+<section id="el-plan" class="marco-ancho">
+  <div class="timeline-intro">
+    <p class="seccion-eyebrow surge">EL RECORRIDO · EMPIEZA A LAS 11:30</p>
+    <h2 class="titulo-editorial surge" style="margin-inline:auto;text-align:center">Un vermú.<br><span style="color:var(--ambar)">Y poco a poco, se va liando.</span></h2>
+    <p class="surge">Una cosa lleva a la otra, como en esas sobremesas que empezaban después de comer y nadie sabía cuándo iban a terminar.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tcard tc-verde surge">
+      <span class="tnum">01</span>
+      <span class="ticon">🍷</span>
+      <p class="twhen">11:30</p>
+      <h3 class="twhat">Vermú</h3>
+      <p class="tdesc">Empezamos tranquilos. Como empiezan las cosas que terminan siendo grandes.</p>
+    </div>
+    <div class="tcard tc-terra surge">
+      <span class="tnum">02</span>
+      <span class="ticon">🃏</span>
+      <p class="twhen">DESPUÉS</p>
+      <h3 class="twhat">Guiñote</h3>
+      <p class="tdesc">Una partida pendiente, una baza discutida y alguien que dice que sabe jugar.</p>
+    </div>
+    <div class="tcard tc-crema surge">
+      <span class="tnum">03</span>
+      <span class="ticon">📢</span>
+      <p class="twhen">LUEGO</p>
+      <h3 class="twhat">Bingo</h3>
+      <p class="tdesc">Se canta línea, bingo y alguna que otra anécdota.</p>
+    </div>
+    <div class="tcard tc-dorado surge">
+      <span class="tnum">04</span>
+      <span class="ticon">🎶</span>
+      <p class="twhen">Y MÁS TARDE</p>
+      <h3 class="twhat">Mesa, copa y baile</h3>
+      <p class="tdesc">Cuando la conversación ya no cabe en la mesa, empieza la música.</p>
+    </div>
+    <div class="tcard tc-oscuro surge">
+      <span class="tnum">??</span>
+      <span class="ticon">✳</span>
+      <p class="twhen">QUIÉN SABE</p>
+      <h3 class="twhat">Un rato más</h3>
+      <p class="tdesc">El plan que nunca tuvo hora de acabar.</p>
+    </div>
+  </div>
+
+  <p class="liando surge">Exactamente como ocurría antes. Se te iba liando poco a poco. Y precisamente ahí estaba la gracia.</p>
 </section>
 
 <hr class="marco">
