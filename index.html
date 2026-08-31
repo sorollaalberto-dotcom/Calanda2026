@@ -370,12 +370,9 @@
 
   /* ── CIERRE ─────────────────────────────── */
   .cierre{
-    min-height:80svh;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
+    padding:clamp(80px,14vh,140px) 0;
     text-align:center;
   }
-  .cierre svg{width:44px;height:auto;margin-bottom:clamp(30px,5vh,48px)}
   .cierre .grande{
     font-family:var(--serif);
     font-size:clamp(2.4rem,9vw,4.4rem);
@@ -384,13 +381,57 @@
     color:var(--crema);
     font-weight:400;
   }
-  .cierre .esencia{
-    margin-top:clamp(34px,6vh,56px);
-    font-size:clamp(.78rem,2.6vw,.95rem);
-    letter-spacing:.34em;
-    text-indent:.34em;
-    color:var(--crema-45);
-    line-height:2;
+  .cierre .grande em{
+    font-style:italic;
+    color:var(--ambar);
+  }
+  .cierre .btn-sorteo{
+    margin-top:clamp(32px,5vh,48px);
+  }
+
+  /* ── SORTEO CON FONDO ───────────────────── */
+  .sorteo-bloque{
+    background:#A0614B;
+    border-radius:24px;
+    padding:clamp(48px,8vh,80px) clamp(24px,5vw,56px);
+    text-align:center;
+  }
+  .sorteo-bloque .seccion-eyebrow{color:var(--crema-70)}
+  .sorteo-bloque h2{
+    font-family:var(--serif);
+    font-size:clamp(2rem,7.6vw,3.4rem);
+    font-weight:400;
+    line-height:1.12;
+    color:var(--crema);
+    margin:12px 0 16px;
+  }
+  .sorteo-bloque h2 em{
+    font-style:italic;
+    color:var(--ambar);
+  }
+  .sorteo-bloque .sub{
+    color:rgba(255,245,232,.7);
+    font-size:1rem;
+    font-weight:300;
+    max-width:26em;
+    margin-inline:auto;
+    margin-bottom:clamp(28px,5vh,40px);
+  }
+  .sorteo-bloque .tarjeta{
+    background:rgba(23,52,37,.85);
+    border-color:rgba(240,221,184,.12);
+    max-width:480px;
+    margin-inline:auto;
+    text-align:left;
+  }
+  .sorteo-privacidad{
+    margin-top:18px;
+    font-size:.75rem;
+    color:rgba(255,245,232,.45);
+    text-align:center;
+    line-height:1.5;
+    max-width:32em;
+    margin-inline:auto;
   }
 
   /* ── SORTEO ─────────────────────────────── */
@@ -663,82 +704,71 @@
 
 <hr class="marco">
 
-<!-- NO ES UNA FIESTA -->
-<section class="marco">
-  <p class="surge">Por eso La Sobremesa no es simplemente una fiesta.</p>
-  <p class="surge fuerte">Es una invitación a volver a hacer las cosas como antes.</p>
+<!-- CIERRE -->
+<section class="cierre marco">
+  <p class="seccion-eyebrow surge">TODAVÍA NO NOS VAMOS</p>
+  <p class="grande surge">Lo bueno<br><em>empieza después.</em></p>
+  <a href="#sorteo" class="btn-sorteo surge">🎁 Apúntate al sorteo ↗</a>
 </section>
 
-<!-- CIERRE -->
-<footer class="cierre marco">
-  <svg viewBox="0 0 100 100" aria-hidden="true">
-    <g stroke="#C9954B" stroke-width="5.4" stroke-linecap="round" fill="none">
-      <path d="M50 12 L50.6 88"/><path d="M12 50.4 L88 49.6"/>
-      <path d="M23.4 23 L76.8 77.2"/><path d="M77 23.4 L23.2 76.8"/>
-    </g>
-  </svg>
-  <p class="grande surge">Quédate<br>un rato más.</p>
-  <p class="esencia surge">RECUPEREMOS<br>NUESTRA ESENCIA</p>
-</footer>
-
 <!-- SORTEO -->
-<section id="sorteo" class="marco seccion-sorteo">
-  <div class="sorteo-cabecera">
-    <p class="seccion-eyebrow surge">LA SOBREMESA · CALANDA</p>
-    <h2 class="surge">Apúntate al sorteo</h2>
-    <p class="sub surge">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
-  </div>
+<section id="sorteo" class="marco-ancho seccion-sorteo">
+  <div class="sorteo-bloque surge">
+    <p class="seccion-eyebrow">LA SOBREMESA · PRÓXIMA EDICIÓN</p>
+    <h2>Apúntate<br><em>al sorteo.</em></h2>
+    <p class="sub">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
 
-  <div class="tarjeta surge">
-    <form id="form-sorteo" novalidate>
+    <div class="tarjeta">
+      <form id="form-sorteo" novalidate>
 
-      <div class="campo">
-        <label class="etiqueta" for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" maxlength="80" autocomplete="name" required>
-        <div class="campo-error" id="error-nombre">Escribe tu nombre.</div>
-      </div>
-
-      <div class="campo">
-        <label class="etiqueta">¿Asistes a la fiesta?</label>
-        <div class="opciones" role="radiogroup" aria-label="¿Asistes a la fiesta?">
-          <label class="opcion">
-            <input type="radio" name="asiste" value="Sí" required>
-            <span>Sí</span>
-          </label>
-          <label class="opcion">
-            <input type="radio" name="asiste" value="No" required>
-            <span>No</span>
-          </label>
+        <div class="campo">
+          <label class="etiqueta" for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" maxlength="80" autocomplete="name" required>
+          <div class="campo-error" id="error-nombre">Escribe tu nombre.</div>
         </div>
-        <div class="campo-error" id="error-asiste">Elige una opción.</div>
-      </div>
 
-      <div class="campo">
-        <label class="etiqueta">¿Te quedas a cenar?</label>
-        <div class="opciones" role="radiogroup" aria-label="¿Te quedas a cenar?">
-          <label class="opcion">
-            <input type="radio" name="cena" value="Sí" required>
-            <span>Sí</span>
-          </label>
-          <label class="opcion">
-            <input type="radio" name="cena" value="No" required>
-            <span>No</span>
-          </label>
-          <label class="opcion">
-            <input type="radio" name="cena" value="Aún no lo sé" required>
-            <span>Aún no lo sé</span>
-          </label>
+        <div class="campo">
+          <label class="etiqueta">¿Asistes a la fiesta?</label>
+          <div class="opciones" role="radiogroup" aria-label="¿Asistes a la fiesta?">
+            <label class="opcion">
+              <input type="radio" name="asiste" value="Sí" required>
+              <span>Sí</span>
+            </label>
+            <label class="opcion">
+              <input type="radio" name="asiste" value="No" required>
+              <span>No</span>
+            </label>
+          </div>
+          <div class="campo-error" id="error-asiste">Elige una opción.</div>
         </div>
-        <div class="campo-error" id="error-cena">Elige una opción.</div>
-      </div>
 
-      <button type="submit" id="btn-enviar">Enviar y participar</button>
+        <div class="campo">
+          <label class="etiqueta">¿Te quedas a cenar?</label>
+          <div class="opciones" role="radiogroup" aria-label="¿Te quedas a cenar?">
+            <label class="opcion">
+              <input type="radio" name="cena" value="Sí" required>
+              <span>Sí</span>
+            </label>
+            <label class="opcion">
+              <input type="radio" name="cena" value="No" required>
+              <span>No</span>
+            </label>
+            <label class="opcion">
+              <input type="radio" name="cena" value="Aún no lo sé" required>
+              <span>Aún no lo sé</span>
+            </label>
+          </div>
+          <div class="campo-error" id="error-cena">Elige una opción.</div>
+        </div>
 
-      <div class="mensaje" id="mensaje"></div>
-    </form>
+        <button type="submit" id="btn-enviar">Enviar y participar ↗</button>
+
+        <div class="mensaje" id="mensaje"></div>
+      </form>
+    </div>
+
+    <p class="sorteo-privacidad">Usaremos estos datos únicamente para organizar la experiencia y comunicarte información de La Sobremesa.</p>
   </div>
-
-  <p class="pie">LA SOBREMESA · CALANDA</p>
 </section>
 
 <!-- BARRA INFERIOR -->
