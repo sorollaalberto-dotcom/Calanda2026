@@ -79,6 +79,14 @@
     background:url('plaza-calanda.jpg') center 40%/cover no-repeat;
     opacity:.18;
     pointer-events:none;
+    image-rendering:auto;
+    -webkit-image-rendering:auto;
+  }
+  @media (min-width:1560px){
+    .portada::before{
+      background-size:contain;
+      background-position:center center;
+    }
   }
   .portada>*{position:relative; z-index:1}
 
