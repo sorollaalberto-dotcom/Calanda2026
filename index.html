@@ -3,338 +3,377 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fiestas de Calanda 2026</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎉</text></svg>">
+<title>La Sobremesa — Quédate un rato más.</title>
 <style>
   :root{
-    --fondo:#f5f5f7;
-    --superficie:#ffffff;
-    --borde:rgba(0,0,0,.08);
-    --texto:#1d1d1f;
-    --texto-tenue:#6e6e73;
-    --texto-tenue2:#86868b;
-    --pastilla:#f0f0f2;
-    --pastilla-activa:#1d1d1f;
-    --azul:#0071e3;
-    --azul-hover:#0077ed;
-    --azul-active:#0068d1;
-    --exito:#1a7f37;
-    --error:#d70015;
+    --verde:#173425;
+    --verde-alto:#1F4430;
+    --crema:#F0DDB8;
+    --crema-70:rgba(240,221,184,.70);
+    --crema-45:rgba(240,221,184,.45);
+    --crema-18:rgba(240,221,184,.18);
+    --ambar:#C9954B;
+    --paso: clamp(1.05rem, 0.95rem + 0.45vw, 1.3rem);
   }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html{ scroll-behavior:smooth; }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html{scroll-behavior:smooth}
+
   body{
-    margin:0;
-    min-height:100vh;
-    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:var(--verde);
+    color:var(--crema);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:300;
+    line-height:1.65;
     -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
-    color:var(--texto);
-    background:var(--fondo);
-    display:flex;
-    justify-content:center;
-    padding:72px 20px 56px;
+    overflow-x:hidden;
   }
 
-  .contenedor{
-    width:100%;
-    max-width:460px;
-    animation:aparecer .5s ease both;
-  }
-  @keyframes aparecer{
-    from{ opacity:0; transform:translateY(10px); }
-    to{ opacity:1; transform:translateY(0); }
+  .grano{
+    position:fixed; inset:0; pointer-events:none; z-index:99; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .cabecera{
-    text-align:center;
-    margin-bottom:32px;
-    padding:0 8px;
-  }
-  .eyebrow{
-    text-transform:uppercase;
-    letter-spacing:.09em;
-    font-size:.72rem;
-    font-weight:600;
-    color:var(--texto-tenue);
-    margin:0 0 12px;
-  }
-  h1{
-    margin:0 0 12px;
-    font-size:2.6rem;
-    font-weight:700;
-    letter-spacing:-.03em;
-    line-height:1.05;
-    color:var(--texto);
-  }
-  .subtitulo{
-    margin:0;
-    color:var(--texto-tenue);
-    font-size:1.05rem;
-    line-height:1.5;
+  .marco{
+    width:min(660px, 88vw);
+    margin-inline:auto;
   }
 
-  .tarjeta{
-    background:var(--superficie);
-    border-radius:24px;
-    padding:32px 26px 26px;
-    box-shadow:0 1px 2px rgba(0,0,0,.04), 0 16px 40px rgba(0,0,0,.06);
-  }
-
-  .campo{ margin-bottom:26px; }
-  .campo:last-of-type{ margin-bottom:0; }
-
-  .etiqueta{
-    display:block;
-    font-size:.98rem;
-    font-weight:600;
-    margin-bottom:12px;
-    letter-spacing:-.01em;
-    color:var(--texto);
-  }
-  .etiqueta .opcional{
-    font-weight:400;
-    color:var(--texto-tenue2);
-  }
-
-  input[type="text"]{
-    width:100%;
-    padding:14px 16px;
-    border:1px solid var(--borde);
-    border-radius:12px;
-    background:var(--pastilla);
-    color:var(--texto);
-    font-size:1rem;
-    font-family:inherit;
-    outline:none;
-    transition:border-color .18s ease, background .18s ease;
-  }
-  input[type="text"]::placeholder{ color:var(--texto-tenue2); }
-  input[type="text"]:focus{
-    border-color:var(--azul);
-    background:#fff;
-  }
-
-  .opciones{
-    display:flex;
-    gap:6px;
-    background:var(--pastilla);
-    border-radius:980px;
-    padding:4px;
-  }
-  .opcion{
-    flex:1;
-    position:relative;
-  }
-  .opcion input{
-    position:absolute;
-    opacity:0;
-    inset:0;
-    width:100%;
-    height:100%;
-    cursor:pointer;
-    margin:0;
-  }
-  .opcion span{
-    display:flex;
+  /* ── BOTÓN SORTEO ──────────────────────── */
+  .cta-sorteo{
+    position:fixed;
+    top:clamp(14px,3vh,26px);
+    right:clamp(14px,4vw,32px);
+    z-index:100;
+    display:inline-flex;
     align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:10px 6px;
+    gap:.5em;
+    padding:.75em 1.3em;
     border-radius:980px;
-    font-size:.9rem;
-    font-weight:500;
-    color:var(--texto-tenue);
-    transition:.16s ease;
-    min-height:38px;
-    line-height:1.25;
+    background:var(--ambar);
+    color:var(--verde);
+    font-size:.85rem;
+    font-weight:400;
+    letter-spacing:.06em;
+    text-decoration:none;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+    transition:transform .15s ease, box-shadow .15s ease;
   }
-  .opcion input:checked + span{
-    background:var(--pastilla-activa);
-    color:#fff;
-    font-weight:600;
-  }
-  .opcion input:focus-visible + span{
-    outline:2px solid var(--azul);
-    outline-offset:2px;
-  }
-  .opcion span:active{ transform:scale(.97); }
+  .cta-sorteo:hover{ transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
+  .cta-sorteo:active{ transform:translateY(0); }
 
-  .campo-error{
-    font-size:.8rem;
-    color:var(--error);
-    margin-top:8px;
-    display:none;
-  }
-
-  button[type="submit"]{
-    width:100%;
-    margin-top:6px;
-    padding:15px;
-    border:none;
-    border-radius:980px;
-    background:var(--azul);
-    color:#fff;
-    font-size:1.02rem;
-    font-family:inherit;
-    font-weight:600;
-    letter-spacing:-.01em;
-    cursor:pointer;
-    transition:background .15s ease, transform .1s ease;
-  }
-  button[type="submit"]:hover{ background:var(--azul-hover); }
-  button[type="submit"]:active{ background:var(--azul-active); transform:scale(.985); }
-  button[type="submit"]:disabled{ opacity:.5; cursor:default; }
-
-  .mensaje{
-    margin-top:16px;
-    padding:13px 14px;
-    border-radius:12px;
+  /* ── PORTADA ───────────────────────────── */
+  .portada{
+    min-height:100svh;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
     text-align:center;
-    font-size:.9rem;
-    font-weight:500;
-    border:1px solid transparent;
-    display:none;
-  }
-  .mensaje.ok{
-    display:block;
-    background:rgba(26,127,55,.08);
-    border-color:rgba(26,127,55,.18);
-    color:var(--exito);
-  }
-  .mensaje.error{
-    display:block;
-    background:rgba(215,0,21,.08);
-    border-color:rgba(215,0,21,.18);
-    color:var(--error);
+    padding:8vh 0 10vh;
   }
 
+  .marca svg{
+    width:clamp(52px,9vw,78px);
+    height:auto;
+    display:block;
+    margin:0 auto clamp(22px,4vh,38px);
+  }
+
+  .marca .linea1,
+  .marca .linea2{
+    display:block;
+    font-weight:400;
+    color:var(--crema);
+    line-height:1.02;
+  }
+  .marca .linea1{
+    font-size:clamp(1.6rem,5.6vw,2.9rem);
+    letter-spacing:.34em;
+    text-indent:.34em;
+  }
+  .marca .linea2{
+    font-size:clamp(2.5rem,10.4vw,5.4rem);
+    letter-spacing:.10em;
+    text-indent:.10em;
+    margin-top:.12em;
+  }
+
+  .claim{
+    margin-top:clamp(28px,5vh,46px);
+    font-size:clamp(1rem,3.4vw,1.35rem);
+    letter-spacing:.02em;
+    color:var(--crema-70);
+  }
+
+  .baja{
+    margin-top:auto;
+    padding-top:9vh;
+    font-size:.72rem;
+    letter-spacing:.3em;
+    text-indent:.3em;
+    color:var(--crema-45);
+  }
+  .baja span{display:block; margin-top:.9em; font-size:1.15rem; letter-spacing:0; text-indent:0}
+
+  /* ── TEXTO ─────────────────────────────── */
+  section{padding:clamp(56px,11vh,110px) 0}
+
+  p{
+    font-size:var(--paso);
+    margin-bottom:1.35em;
+    color:var(--crema-70);
+    max-width:34em;
+  }
+  p.fuerte{color:var(--crema)}
+  p:last-child{margin-bottom:0}
+
+  .voz{
+    font-size:clamp(1.45rem,5.6vw,2.35rem);
+    line-height:1.28;
+    font-weight:300;
+    color:var(--crema);
+    max-width:15em;
+    margin:clamp(34px,6vh,56px) 0;
+  }
+  .voz small{
+    display:block;
+    font-size:.42em;
+    letter-spacing:.24em;
+    text-indent:.24em;
+    color:var(--crema-45);
+    margin-top:1.5em;
+    line-height:1.6;
+  }
+
+  hr{
+    border:0;
+    height:1px;
+    background:var(--crema-18);
+    margin:clamp(46px,8vh,84px) 0;
+  }
+
+  /* ── RECUPERAR ─────────────────────────── */
+  .recuperar{
+    list-style:none;
+    margin:clamp(30px,5vh,48px) 0 0;
+  }
+  .recuperar li{
+    font-size:clamp(1.12rem,4.2vw,1.6rem);
+    line-height:1.35;
+    padding:.66em 0;
+    border-bottom:1px solid var(--crema-18);
+    color:var(--crema);
+  }
+  .recuperar li:first-child{border-top:1px solid var(--crema-18)}
+  .recuperar li b{font-weight:300; color:var(--crema-45)}
+
+  /* ── EL DÍA ────────────────────────────── */
+  .rotulo{
+    font-size:.72rem;
+    letter-spacing:.3em;
+    text-indent:.3em;
+    color:var(--crema-45);
+    margin-bottom:clamp(26px,4vh,40px);
+  }
+
+  .dia{list-style:none}
+  .dia li{
+    display:grid;
+    grid-template-columns:5.2em 1fr;
+    gap:1.1em;
+    align-items:baseline;
+    padding:.78em 0;
+    border-bottom:1px solid var(--crema-18);
+  }
+  .dia li:first-child{border-top:1px solid var(--crema-18)}
+  .dia .hora{
+    font-size:.86rem;
+    letter-spacing:.12em;
+    color:var(--crema-45);
+    font-variant-numeric:tabular-nums;
+  }
+  .dia .que{
+    font-size:clamp(1.05rem,3.9vw,1.4rem);
+    color:var(--crema);
+  }
+  .dia li.abierto .hora,
+  .dia li.abierto .que{color:var(--ambar)}
+  .dia li.abierto{border-bottom-color:transparent}
+
+  .liando{
+    margin-top:1.6em;
+    font-size:var(--paso);
+    color:var(--crema-45);
+    max-width:30em;
+  }
+
+  /* ── CIERRE ────────────────────────────── */
+  .cierre{
+    min-height:88svh;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center;
+  }
+  .cierre svg{width:44px; height:auto; margin-bottom:clamp(30px,5vh,48px)}
+  .cierre .grande{
+    font-size:clamp(1.9rem,7.6vw,3.4rem);
+    line-height:1.18;
+    color:var(--crema);
+    font-weight:400;
+    letter-spacing:.01em;
+  }
+  .cierre .esencia{
+    margin-top:clamp(34px,6vh,56px);
+    font-size:clamp(.78rem,2.6vw,.95rem);
+    letter-spacing:.34em;
+    text-indent:.34em;
+    color:var(--crema-45);
+    line-height:2;
+  }
+  .cierre .cta-sorteo-final{
+    margin-top:clamp(40px,7vh,60px);
+    position:static;
+    box-shadow:none;
+  }
   .pie{
-    text-align:center;
-    font-size:.78rem;
-    color:var(--texto-tenue2);
-    margin:24px 10px 0;
-    line-height:1.5;
+    margin-top:clamp(56px,10vh,96px);
+    font-size:.74rem;
+    letter-spacing:.18em;
+    color:var(--crema-45);
   }
 
-  @media (max-width:380px){
-    h1{ font-size:2.1rem; }
-    .tarjeta{ padding:26px 20px 22px; }
+  /* ── APARICIÓN ─────────────────────────── */
+  .surge{opacity:0; transform:translateY(14px); transition:opacity .9s ease, transform .9s ease}
+  .surge.dentro{opacity:1; transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .surge{opacity:1; transform:none; transition:none}
   }
 </style>
 </head>
 <body>
+<div class="grano"></div>
 
-<div class="contenedor">
-  <div class="cabecera">
-    <h1>Confirma tu asistencia.</h1>
-    <p class="subtitulo">Ayúdanos a organizar la fiesta de este año.</p>
+<a href="sorteo.html" class="cta-sorteo">🎁 Sorteo</a>
+
+<!-- PORTADA -->
+<header class="portada marco">
+  <div class="marca">
+    <svg viewBox="0 0 100 100" aria-label="La Sobremesa">
+      <g stroke="#F0DDB8" stroke-width="5.4" stroke-linecap="round" fill="none">
+        <path d="M50 12 L50.6 88"/>
+        <path d="M12 50.4 L88 49.6"/>
+        <path d="M23.4 23 L76.8 77.2"/>
+        <path d="M77 23.4 L23.2 76.8"/>
+      </g>
+    </svg>
+    <span class="linea1">LA</span>
+    <span class="linea2">SOBREMESA</span>
   </div>
 
-  <div class="tarjeta">
-    <form id="form-fiesta" novalidate>
+  <p class="claim">Quédate un rato más.</p>
 
-      <div class="campo">
-        <label class="etiqueta" for="nombre">Nombre <span class="opcional">(opcional)</span></label>
-        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" maxlength="80" autocomplete="name">
-      </div>
-
-      <div class="campo">
-        <label class="etiqueta">¿Asistes a la fiesta?</label>
-        <div class="opciones" role="radiogroup" aria-label="¿Asistes a la fiesta?">
-          <label class="opcion">
-            <input type="radio" name="asiste" value="Sí" required>
-            <span>Sí</span>
-          </label>
-          <label class="opcion">
-            <input type="radio" name="asiste" value="No" required>
-            <span>No</span>
-          </label>
-        </div>
-        <div class="campo-error" id="error-asiste">Elige una opción.</div>
-      </div>
-
-      <div class="campo">
-        <label class="etiqueta">¿Te quedas a cenar?</label>
-        <div class="opciones" role="radiogroup" aria-label="¿Te quedas a cenar?">
-          <label class="opcion">
-            <input type="radio" name="cena" value="Sí" required>
-            <span>Sí</span>
-          </label>
-          <label class="opcion">
-            <input type="radio" name="cena" value="No" required>
-            <span>No</span>
-          </label>
-          <label class="opcion">
-            <input type="radio" name="cena" value="Aún no lo sé" required>
-            <span>Aún no lo sé</span>
-          </label>
-        </div>
-        <div class="campo-error" id="error-cena">Elige una opción.</div>
-      </div>
-
-      <button type="submit" id="btn-enviar">Enviar respuesta</button>
-
-      <div class="mensaje" id="mensaje"></div>
-    </form>
+  <div class="baja">
+    CALANDA
+    <span>↓</span>
   </div>
+</header>
 
-  <p class="pie">Tus respuestas se guardan directamente en la hoja de cálculo de la organización.</p>
-</div>
+<!-- LA IDEA -->
+<section class="marco">
+  <p class="surge fuerte">La idea nace de algo muy sencillo: volver a nuestra esencia.</p>
+  <p class="surge">Porque antes había cosas que hacíamos de una manera mucho más natural y que, poco a poco, hemos ido perdiendo. No teníamos tanta prisa.</p>
+  <p class="surge">Te sentabas a comer y no estabas mirando el móvil. No estabas pendiente de la hora ni pensando constantemente en qué venía después. Simplemente estabas ahí, disfrutando del momento y de estar con los demás.</p>
+</section>
+
+<!-- LA CADENA -->
+<section class="marco">
+  <p class="surge">Terminabas de comer y llegaba el café. El café se convertía en una copa. Alguien proponía una partida. Se acercaba otra persona. Empezaban las conversaciones. Llegaba otra ronda.</p>
+
+  <p class="voz surge">«¿Nos quedamos un rato más?»<small>Y ese rato acababa siendo otra hora.</small></p>
+
+  <p class="surge">Se te iba liando poco a poco. Y precisamente ahí estaba la gracia. No hacía falta tenerlo todo planificado. No había que saber exactamente qué iba a pasar después.</p>
+  <p class="surge fuerte">El plan era estar juntos.</p>
+</section>
+
+<hr class="marco">
+
+<!-- QUÉ ES -->
+<section class="marco">
+  <p class="surge">La Sobremesa es ese momento en el que dejas de mirar el reloj y simplemente te dejas llevar. Cuando una cosa lleva a la otra y el plan se alarga porque, sencillamente, estás a gusto y no quieres que se acabe.</p>
+</section>
+
+<!-- RECUPERAR -->
+<section class="marco">
+  <p class="rotulo surge">SE TRATA DE RECUPERAR</p>
+  <ul class="recuperar">
+    <li class="surge"><b>Recuperar</b> el vermú.</li>
+    <li class="surge"><b>Recuperar</b> las partidas.</li>
+    <li class="surge"><b>Recuperar</b> el hablar sin mirar el móvil.</li>
+    <li class="surge"><b>Recuperar</b> el comer juntos.</li>
+    <li class="surge"><b>Recuperar</b> las conversaciones que no tienen prisa.</li>
+    <li class="surge"><b>Recuperar</b> el «vamos a tomar una última».</li>
+    <li class="surge"><b>Recuperar</b> el quedarnos aunque ya no haya ninguna razón para hacerlo.</li>
+    <li class="surge"><b>Recuperar</b> ese punto en el que el tiempo deja de importar.</li>
+  </ul>
+</section>
+
+<hr class="marco">
+
+<!-- EL DÍA -->
+<section class="marco">
+  <p class="rotulo surge">CÓMO SE VA LIANDO</p>
+  <ul class="dia">
+    <li class="surge"><span class="hora">11:30</span><span class="que">Un vermú</span></li>
+    <li class="surge"><span class="hora">12:30</span><span class="que">Una partida de guiñote</span></li>
+    <li class="surge"><span class="hora">14:00</span><span class="que">Algo de comer</span></li>
+    <li class="surge"><span class="hora">15:30</span><span class="que">Un bingo</span></li>
+    <li class="surge"><span class="hora">17:00</span><span class="que">Una copa</span></li>
+    <li class="surge"><span class="hora">18:30</span><span class="que">Música y baile</span></li>
+    <li class="surge abierto"><span class="hora">??:??</span><span class="que">Un rato más</span></li>
+  </ul>
+  <p class="liando surge">Una cosa lleva a la otra. Exactamente como ocurría antes en esas sobremesas que empezaban después de comer y nadie sabía cuándo iban a terminar.</p>
+</section>
+
+<hr class="marco">
+
+<!-- NO ES UNA FIESTA -->
+<section class="marco">
+  <p class="surge">Por eso La Sobremesa no es simplemente una fiesta.</p>
+  <p class="surge fuerte">Es una invitación a volver a hacer las cosas como antes.</p>
+</section>
+
+<!-- CIERRE -->
+<footer class="cierre marco">
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <g stroke="#C9954B" stroke-width="5.4" stroke-linecap="round" fill="none">
+      <path d="M50 12 L50.6 88"/>
+      <path d="M12 50.4 L88 49.6"/>
+      <path d="M23.4 23 L76.8 77.2"/>
+      <path d="M77 23.4 L23.2 76.8"/>
+    </g>
+  </svg>
+  <p class="grande">Quédate<br>un rato más.</p>
+  <p class="esencia">RECUPEREMOS<br>NUESTRA ESENCIA</p>
+  <a href="sorteo.html" class="cta-sorteo cta-sorteo-final">🎁 Apúntate al sorteo</a>
+  <p class="pie">LA SOBREMESA · CALANDA</p>
+</footer>
 
 <script>
-  // EDITA AQUÍ: pega la URL de tu Google Apps Script (termina en /exec).
-  // Instrucciones para obtenerla: README.md
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0aVuWbeX2yDEinbCwkYfUCIquFZAo6QKLvQhd5nlrytnkSqLjd-Gqo3xO4nJRmt4_/exec';
+  const ojo = new IntersectionObserver((entradas)=>{
+    entradas.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('dentro');
+        ojo.unobserve(e.target);
+      }
+    });
+  },{threshold:.15, rootMargin:'0px 0px -8% 0px'});
 
-  const form = document.getElementById('form-fiesta');
-  const btn = document.getElementById('btn-enviar');
-  const mensaje = document.getElementById('mensaje');
-  const errorAsiste = document.getElementById('error-asiste');
-  const errorCena = document.getElementById('error-cena');
-
-  function mostrarMensaje(texto, tipo) {
-    mensaje.textContent = texto;
-    mensaje.className = 'mensaje ' + tipo;
-  }
-
-  form.addEventListener('submit', async (evento) => {
-    evento.preventDefault();
-    mensaje.className = 'mensaje';
-    errorAsiste.style.display = 'none';
-    errorCena.style.display = 'none';
-
-    const datos = new FormData(form);
-    const asiste = datos.get('asiste');
-    const cena = datos.get('cena');
-
-    let valido = true;
-    if (!asiste) { errorAsiste.style.display = 'block'; valido = false; }
-    if (!cena) { errorCena.style.display = 'block'; valido = false; }
-    if (!valido) return;
-
-    if (SCRIPT_URL.includes('PEGA_AQUI_TU_ID_DE_DESPLIEGUE')) {
-      mostrarMensaje('Falta configurar la URL de Google Apps Script (ver README.md).', 'error');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
-
-    try {
-      // mode:'no-cors' porque el Web App de Apps Script no puede leerse
-      // desde otro origen; el envío llega igualmente y se guarda en la hoja.
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: datos });
-      form.reset();
-      mostrarMensaje('Gracias, tu respuesta se ha guardado.', 'ok');
-    } catch (e) {
-      mostrarMensaje('No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Enviar respuesta';
-    }
+  document.querySelectorAll('.surge').forEach((el,i)=>{
+    el.style.transitionDelay = (Math.min(i,6)*45) + 'ms';
+    ojo.observe(el);
   });
 </script>
-
 </body>
 </html>
