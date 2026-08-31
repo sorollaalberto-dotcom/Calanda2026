@@ -96,7 +96,58 @@
   }
   .nav-cta:hover{opacity:.88}
   @media(max-width:600px){
-    .nav-links a:not(.nav-cta){display:none}
+    .nav-links{display:none}
+  }
+
+  /* ── HAMBURGUESA ────────────────────────── */
+  .hamburger{
+    display:none;
+    background:none;border:none;cursor:pointer;padding:8px;
+    color:var(--crema);
+  }
+  .hamburger svg{width:24px;height:24px}
+  @media(max-width:600px){
+    .hamburger{display:block}
+  }
+
+  .menu-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(23,52,37,.97);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    display:flex;flex-direction:column;
+    padding:0 clamp(24px,6vw,48px);
+    opacity:0;pointer-events:none;
+    transition:opacity .3s ease;
+  }
+  .menu-overlay.abierto{opacity:1;pointer-events:auto}
+  .menu-overlay-top{
+    height:60px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .menu-close{
+    background:none;border:none;cursor:pointer;
+    color:var(--crema);padding:8px;
+    font-size:1.6rem;line-height:1;
+  }
+  .menu-nav{
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+    gap:0;
+  }
+  .menu-nav a{
+    display:block;
+    padding:18px 0;
+    border-bottom:1px solid var(--crema-18);
+    font-size:.82rem;
+    letter-spacing:.24em;
+    font-weight:500;
+    color:var(--crema);
+    text-decoration:none;
+    transition:color .15s;
+  }
+  .menu-nav a:first-child{border-top:1px solid var(--crema-18)}
+  .menu-nav a:hover{color:var(--ambar)}
+  .menu-cta{
+    padding:24px 0 48px;
   }
 
   /* ── PORTADA ────────────────────────────── */
@@ -368,6 +419,83 @@
     margin-inline:auto;
   }
 
+  /* ── FOTO SOBREMESA ──────────────────────── */
+  .foto-seccion{
+    padding:0 clamp(16px,4vw,32px);
+    margin-top:-6vh;
+    position:relative;z-index:2;
+  }
+  .foto-seccion img{
+    width:100%;
+    border-radius:20px;
+    display:block;
+    aspect-ratio:16/10;
+    object-fit:cover;
+    border:1px solid var(--crema-18);
+  }
+
+  /* ── YEYE ──────────────────────────────── */
+  .yeye{
+    background:#C4816A;
+    color:var(--verde);
+    border-radius:0;
+    padding:clamp(64px,12vh,120px) 0;
+  }
+  .yeye .seccion-eyebrow{color:var(--verde)}
+  .yeye .titulo-editorial{
+    color:var(--verde);
+    font-size:clamp(2.2rem,8.5vw,4rem);
+    max-width:12em;
+  }
+  .yeye .titulo-editorial em{
+    font-style:italic;
+    color:#173425;
+  }
+  .yeye p{color:rgba(23,52,37,.7);max-width:30em}
+  .yeye-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:clamp(16px,3vw,32px);
+    margin-top:clamp(36px,6vh,56px);
+  }
+  .yeye-grid .paso{
+    border-top:2px solid var(--verde);
+    padding-top:clamp(16px,2.5vh,24px);
+  }
+  .yeye-grid .paso-num{
+    font-family:var(--serif);
+    font-size:clamp(1.6rem,4.5vw,2.2rem);
+    font-style:italic;
+    color:var(--verde);
+    margin-bottom:8px;
+  }
+  .yeye-grid .paso-titulo{
+    font-size:.72rem;
+    letter-spacing:.14em;
+    font-weight:700;
+    color:var(--verde);
+    margin-bottom:8px;
+    line-height:1.4;
+  }
+  .yeye-grid .paso-desc{
+    font-size:clamp(.82rem,.76rem + .28vw,.92rem);
+    line-height:1.5;
+    color:rgba(23,52,37,.6);
+    margin-bottom:0;
+  }
+  @media(max-width:560px){
+    .yeye-grid{grid-template-columns:1fr}
+  }
+  .yeye-cita{
+    font-family:var(--serif);
+    font-size:clamp(1.2rem,4.5vw,1.9rem);
+    font-style:italic;
+    color:var(--ambar);
+    margin-top:clamp(36px,6vh,56px);
+    max-width:22em;
+    line-height:1.35;
+  }
+
   /* ── CIERRE ─────────────────────────────── */
   .cierre{
     padding:clamp(80px,14vh,140px) 0;
@@ -594,7 +722,31 @@
     <a href="#el-plan">EL PLAN</a>
     <a href="#sorteo" class="nav-cta">Apúntate al sorteo</a>
   </div>
+  <button class="hamburger" aria-label="Menú" onclick="document.getElementById('menu').classList.add('abierto')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+  </button>
 </nav>
+
+<!-- MENÚ MOBILE -->
+<div id="menu" class="menu-overlay">
+  <div class="menu-overlay-top">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#F0DDB8" stroke-width="6" stroke-linecap="round" fill="none"><path d="M50 12 L50.6 88"/><path d="M12 50.4 L88 49.6"/><path d="M23.4 23 L76.8 77.2"/><path d="M77 23.4 L23.2 76.8"/></g></svg>
+      <span>LA SOBREMESA</span>
+    </a>
+    <button class="menu-close" aria-label="Cerrar" onclick="document.getElementById('menu').classList.remove('abierto')">&times;</button>
+  </div>
+  <nav class="menu-nav">
+    <a href="#el-plan" onclick="document.getElementById('menu').classList.remove('abierto')">EL PLAN</a>
+    <a href="#la-idea" onclick="document.getElementById('menu').classList.remove('abierto')">LA ESENCIA</a>
+    <a href="#recuperar" onclick="document.getElementById('menu').classList.remove('abierto')">RECUPERAR</a>
+    <a href="#el-yeye" onclick="document.getElementById('menu').classList.remove('abierto')">EL YEYE</a>
+    <a href="#sorteo" onclick="document.getElementById('menu').classList.remove('abierto')">APUNTATE</a>
+  </nav>
+  <div class="menu-cta">
+    <a href="#sorteo" class="btn-sorteo" onclick="document.getElementById('menu').classList.remove('abierto')">Apúntate al sorteo</a>
+  </div>
+</div>
 
 <!-- PORTADA -->
 <header class="portada">
@@ -615,6 +767,11 @@
   </div>
 </header>
 
+<!-- FOTO SOBREMESA -->
+<div class="foto-seccion surge">
+  <img src="sobremesa.jpg" alt="Una sobremesa en Calanda — vasos, botellas y la luz de la tarde" loading="lazy">
+</div>
+
 <!-- LA IDEA -->
 <section id="la-idea" class="marco">
   <p class="seccion-eyebrow surge">LA IDEA</p>
@@ -634,7 +791,7 @@
 <hr class="marco">
 
 <!-- RECUPERAR -->
-<section class="marco">
+<section id="recuperar" class="marco">
   <p class="seccion-eyebrow surge">LO QUE VENIMOS A RECUPERAR</p>
   <h2 class="titulo-editorial surge">Una forma<br>de estar.</h2>
   <p class="recuperar-intro surge">No queremos volver atrás. Queremos volver a hacer algunas cosas de una manera mucho más natural.</p>
@@ -700,6 +857,35 @@
   </div>
 
   <p class="liando surge">Exactamente como ocurría antes. Se te iba liando poco a poco. Y precisamente ahí estaba la gracia.</p>
+</section>
+
+<!-- EL YEYE -->
+<section id="el-yeye" class="yeye">
+  <div class="marco">
+    <p class="seccion-eyebrow surge">LA ESQUINITA DEL YEYE</p>
+    <h2 class="titulo-editorial surge">El Yeye pone la hamburguesa.<br><em>El cheddar lo pones tú.</em></h2>
+    <p class="surge">El Yeye aprendió a cocinar alrededor de una mesa. La tortilla representa lo que ha aprendido. Su hamburguesa, todo lo que todavía quiere probar.</p>
+
+    <div class="yeye-grid">
+      <div class="paso surge">
+        <p class="paso-num">01</p>
+        <p class="paso-titulo">CONSIGUE TU TICKET</p>
+        <p class="paso-desc">Unidades limitadas durante el evento.</p>
+      </div>
+      <div class="paso surge">
+        <p class="paso-num">02</p>
+        <p class="paso-titulo">DEJA EL MÓVIL</p>
+        <p class="paso-desc">Solo un momento. La sobremesa empieza cuando estamos presentes.</p>
+      </div>
+      <div class="paso surge">
+        <p class="paso-num">03</p>
+        <p class="paso-titulo">INYECTA EL CHEDDAR</p>
+        <p class="paso-desc">Termina tu Hamburguesa del Yeye y sigue la sobremesa.</p>
+      </div>
+    </div>
+
+    <p class="yeye-cita surge">Deja el móvil. Coge un ticket. Quédate un rato.</p>
+  </div>
 </section>
 
 <hr class="marco">
