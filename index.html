@@ -230,16 +230,159 @@
     color:var(--crema-45);
     line-height:2;
   }
-  .cierre .cta-sorteo-final{
-    margin-top:clamp(40px,7vh,60px);
-    position:static;
-    box-shadow:none;
-  }
   .pie{
-    margin-top:clamp(56px,10vh,96px);
+    margin:clamp(56px,10vh,96px) 0 clamp(40px,7vh,64px);
+    text-align:center;
     font-size:.74rem;
     letter-spacing:.18em;
     color:var(--crema-45);
+  }
+
+  /* ── SORTEO (formulario embebido) ───────── */
+  .seccion-sorteo{ scroll-margin-top:24px; }
+  .sorteo-cabecera{
+    text-align:center;
+    margin-bottom:clamp(28px,5vh,40px);
+  }
+  .sorteo-cabecera h2{
+    margin:12px 0 12px;
+    font-size:clamp(1.9rem,7vw,2.6rem);
+    font-weight:400;
+    letter-spacing:.01em;
+    line-height:1.15;
+    color:var(--crema);
+  }
+  .sorteo-cabecera .sub{
+    color:var(--crema-70);
+    font-size:1rem;
+    font-weight:300;
+    max-width:26em;
+    margin-inline:auto;
+  }
+
+  .tarjeta{
+    background:var(--crema-18);
+    background:rgba(240,221,184,.08);
+    border:1px solid var(--crema-18);
+    border-radius:20px;
+    padding:30px 24px 24px;
+  }
+
+  .campo{ margin-bottom:26px; }
+  .campo:last-of-type{ margin-bottom:0; }
+
+  .etiqueta{
+    display:block;
+    font-size:.92rem;
+    font-weight:400;
+    margin-bottom:12px;
+    letter-spacing:.02em;
+    color:var(--crema);
+  }
+
+  input[type="text"]{
+    width:100%;
+    padding:14px 16px;
+    border:1px solid var(--crema-18);
+    border-radius:12px;
+    background:rgba(0,0,0,.15);
+    color:var(--crema);
+    font-size:1rem;
+    font-family:inherit;
+    font-weight:300;
+    outline:none;
+    transition:border-color .18s ease, background .18s ease;
+  }
+  input[type="text"]::placeholder{ color:var(--crema-45); }
+  input[type="text"]:focus{
+    border-color:var(--ambar);
+    background:rgba(0,0,0,.22);
+  }
+
+  .opciones{
+    display:flex;
+    gap:6px;
+    background:rgba(0,0,0,.15);
+    border-radius:980px;
+    padding:4px;
+  }
+  .opcion{ flex:1; position:relative; }
+  .opcion input{
+    position:absolute; opacity:0; inset:0;
+    width:100%; height:100%; cursor:pointer; margin:0;
+  }
+  .opcion span{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px 6px;
+    border-radius:980px;
+    font-size:.88rem;
+    font-weight:300;
+    color:var(--crema-70);
+    transition:.16s ease;
+    min-height:38px;
+    line-height:1.25;
+  }
+  .opcion input:checked + span{
+    background:var(--ambar);
+    color:var(--verde);
+    font-weight:400;
+  }
+  .opcion input:focus-visible + span{
+    outline:2px solid var(--ambar);
+    outline-offset:2px;
+  }
+  .opcion span:active{ transform:scale(.97); }
+
+  .campo-error{
+    font-size:.8rem;
+    color:#e8735a;
+    margin-top:8px;
+    display:none;
+  }
+
+  button[type="submit"]{
+    width:100%;
+    margin-top:6px;
+    padding:15px;
+    border:none;
+    border-radius:980px;
+    background:var(--ambar);
+    color:var(--verde);
+    font-size:1rem;
+    font-family:inherit;
+    font-weight:400;
+    letter-spacing:.02em;
+    cursor:pointer;
+    transition:opacity .15s ease, transform .1s ease;
+  }
+  button[type="submit"]:hover{ opacity:.9; }
+  button[type="submit"]:active{ transform:scale(.985); }
+  button[type="submit"]:disabled{ opacity:.5; cursor:default; }
+
+  .mensaje{
+    margin-top:16px;
+    padding:13px 14px;
+    border-radius:12px;
+    text-align:center;
+    font-size:.9rem;
+    font-weight:400;
+    border:1px solid transparent;
+    display:none;
+  }
+  .mensaje.ok{
+    display:block;
+    background:rgba(201,149,75,.14);
+    border-color:rgba(201,149,75,.35);
+    color:var(--ambar);
+  }
+  .mensaje.error{
+    display:block;
+    background:rgba(232,115,90,.12);
+    border-color:rgba(232,115,90,.3);
+    color:#e8735a;
   }
 
   /* ── APARICIÓN ─────────────────────────── */
@@ -255,7 +398,7 @@
 <body>
 <div class="grano"></div>
 
-<a href="sorteo.html" class="cta-sorteo">🎁 Sorteo</a>
+<a href="#sorteo" class="cta-sorteo">🎁 Sorteo</a>
 
 <!-- PORTADA -->
 <header class="portada marco">
@@ -356,11 +499,124 @@
   </svg>
   <p class="grande">Quédate<br>un rato más.</p>
   <p class="esencia">RECUPEREMOS<br>NUESTRA ESENCIA</p>
-  <a href="sorteo.html" class="cta-sorteo cta-sorteo-final">🎁 Apúntate al sorteo</a>
-  <p class="pie">LA SOBREMESA · CALANDA</p>
 </footer>
 
+<!-- SORTEO (formulario embebido) -->
+<section id="sorteo" class="marco seccion-sorteo">
+  <div class="sorteo-cabecera">
+    <p class="rotulo surge">LA SOBREMESA · CALANDA</p>
+    <h2 class="surge">Apúntate al sorteo</h2>
+    <p class="sub surge">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
+  </div>
+
+  <div class="tarjeta surge">
+    <form id="form-sorteo" novalidate>
+
+      <div class="campo">
+        <label class="etiqueta" for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" maxlength="80" autocomplete="name" required>
+        <div class="campo-error" id="error-nombre">Escribe tu nombre.</div>
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">¿Asistes a la fiesta?</label>
+        <div class="opciones" role="radiogroup" aria-label="¿Asistes a la fiesta?">
+          <label class="opcion">
+            <input type="radio" name="asiste" value="Sí" required>
+            <span>Sí</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="asiste" value="No" required>
+            <span>No</span>
+          </label>
+        </div>
+        <div class="campo-error" id="error-asiste">Elige una opción.</div>
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">¿Te quedas a cenar?</label>
+        <div class="opciones" role="radiogroup" aria-label="¿Te quedas a cenar?">
+          <label class="opcion">
+            <input type="radio" name="cena" value="Sí" required>
+            <span>Sí</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="cena" value="No" required>
+            <span>No</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="cena" value="Aún no lo sé" required>
+            <span>Aún no lo sé</span>
+          </label>
+        </div>
+        <div class="campo-error" id="error-cena">Elige una opción.</div>
+      </div>
+
+      <button type="submit" id="btn-enviar">Enviar y participar</button>
+
+      <div class="mensaje" id="mensaje"></div>
+    </form>
+  </div>
+
+  <p class="pie">LA SOBREMESA · CALANDA</p>
+</section>
+
 <script>
+  // EDITA AQUÍ: pega la URL de tu Google Apps Script (termina en /exec).
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0aVuWbeX2yDEinbCwkYfUCIquFZAo6QKLvQhd5nlrytnkSqLjd-Gqo3xO4nJRmt4_/exec';
+
+  const formSorteo = document.getElementById('form-sorteo');
+  const btnEnviar = document.getElementById('btn-enviar');
+  const mensaje = document.getElementById('mensaje');
+  const errorNombre = document.getElementById('error-nombre');
+  const errorAsiste = document.getElementById('error-asiste');
+  const errorCena = document.getElementById('error-cena');
+
+  function mostrarMensaje(texto, tipo) {
+    mensaje.textContent = texto;
+    mensaje.className = 'mensaje ' + tipo;
+  }
+
+  formSorteo.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    mensaje.className = 'mensaje';
+    errorNombre.style.display = 'none';
+    errorAsiste.style.display = 'none';
+    errorCena.style.display = 'none';
+
+    const datos = new FormData(formSorteo);
+    const nombre = datos.get('nombre').trim();
+    const asiste = datos.get('asiste');
+    const cena = datos.get('cena');
+
+    let valido = true;
+    if (!nombre) { errorNombre.style.display = 'block'; valido = false; }
+    if (!asiste) { errorAsiste.style.display = 'block'; valido = false; }
+    if (!cena) { errorCena.style.display = 'block'; valido = false; }
+    if (!valido) return;
+
+    if (SCRIPT_URL.includes('PEGA_AQUI_TU_ID_DE_DESPLIEGUE')) {
+      mostrarMensaje('Falta configurar la URL de Google Apps Script.', 'error');
+      return;
+    }
+
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
+
+    try {
+      // mode:'no-cors' porque el Web App de Apps Script no puede leerse
+      // desde otro origen; el envío llega igualmente y se guarda en la hoja.
+      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: datos });
+      formSorteo.reset();
+      mostrarMensaje('Gracias, ya estás dentro del sorteo.', 'ok');
+    } catch (e) {
+      mostrarMensaje('No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.', 'error');
+    } finally {
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Enviar y participar';
+    }
+  });
+
   const ojo = new IntersectionObserver((entradas)=>{
     entradas.forEach(e=>{
       if(e.isIntersecting){
