@@ -71,44 +71,12 @@
     letter-spacing:.22em;
     font-weight:400;
   }
-  .nav-links{
-    display:flex;align-items:center;gap:clamp(16px,3vw,32px);
-  }
-  .nav-links a{
-    font-size:.76rem;
-    letter-spacing:.14em;
-    color:var(--crema-45);
-    text-decoration:none;
-    transition:color .15s;
-  }
-  .nav-links a:hover{color:var(--crema)}
-  .nav-cta{
-    display:inline-flex;align-items:center;gap:.4em;
-    padding:.55em 1.1em;
-    border-radius:980px;
-    background:var(--ambar);
-    color:var(--verde);
-    font-size:.78rem;
-    font-weight:500;
-    letter-spacing:.04em;
-    text-decoration:none;
-    transition:opacity .15s;
-  }
-  .nav-cta:hover{opacity:.88}
-  @media(max-width:600px){
-    .nav-links{display:none}
-  }
-
-  /* ── HAMBURGUESA ────────────────────────── */
+  /* ── HAMBURGUESA (siempre visible) ───────── */
   .hamburger{
-    display:none;
     background:none;border:none;cursor:pointer;padding:8px;
     color:var(--crema);
   }
   .hamburger svg{width:24px;height:24px}
-  @media(max-width:600px){
-    .hamburger{display:block}
-  }
 
   .menu-overlay{
     position:fixed;inset:0;z-index:200;
@@ -717,11 +685,6 @@
     </svg>
     <span>LA SOBREMESA</span>
   </a>
-  <div class="nav-links">
-    <a href="#la-idea">LA IDEA</a>
-    <a href="#el-plan">EL PLAN</a>
-    <a href="#sorteo" class="nav-cta">Apúntate al sorteo</a>
-  </div>
   <button class="hamburger" aria-label="Menú" onclick="document.getElementById('menu').classList.add('abierto')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
   </button>
