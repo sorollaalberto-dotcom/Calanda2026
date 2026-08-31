@@ -65,12 +65,22 @@
 
   /* ── PORTADA ───────────────────────────── */
   .portada{
+    position:relative;
     min-height:100svh;
     display:flex; flex-direction:column;
     align-items:center; justify-content:center;
     text-align:center;
     padding:8vh 0 10vh;
   }
+  .portada::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:url('plaza-calanda.jpg') center 40%/cover no-repeat;
+    opacity:.18;
+    pointer-events:none;
+  }
+  .portada>*{position:relative; z-index:1}
 
   .marca svg{
     width:clamp(52px,9vw,78px);
