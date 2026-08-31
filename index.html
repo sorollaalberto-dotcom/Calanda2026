@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Sobremesa — Quédate un rato más.</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✳</text></svg>">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
   :root{
     --verde:#173425;
     --verde-alto:#1F4430;
@@ -12,165 +15,247 @@
     --crema-70:rgba(240,221,184,.70);
     --crema-45:rgba(240,221,184,.45);
     --crema-18:rgba(240,221,184,.18);
+    --crema-08:rgba(240,221,184,.08);
     --ambar:#C9954B;
-    --paso: clamp(1.05rem, 0.95rem + 0.45vw, 1.3rem);
+    --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    --paso:clamp(1.05rem,0.95rem + 0.45vw,1.3rem);
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-
   html{scroll-behavior:smooth}
 
   body{
     background:var(--verde);
     color:var(--crema);
-    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family:var(--sans);
     font-weight:300;
     line-height:1.65;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
+    padding-bottom:72px;
   }
 
   .grano{
-    position:fixed; inset:0; pointer-events:none; z-index:99; opacity:.05;
+    position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.05;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   .marco{
-    width:min(660px, 88vw);
+    width:min(720px,90vw);
+    margin-inline:auto;
+  }
+  .marco-ancho{
+    width:min(960px,92vw);
     margin-inline:auto;
   }
 
-  /* ── BOTÓN SORTEO ──────────────────────── */
-  .cta-sorteo{
-    position:fixed;
-    top:clamp(14px,3vh,26px);
-    right:clamp(14px,4vw,32px);
-    z-index:100;
-    display:inline-flex;
-    align-items:center;
-    gap:.5em;
-    padding:.75em 1.3em;
+  /* ── NAV ────────────────────────────────── */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:0 clamp(16px,4vw,32px);
+    height:60px;
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(23,52,37,.92);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--crema-18);
+  }
+  .nav-logo{
+    display:flex;align-items:center;gap:10px;
+    text-decoration:none;color:var(--crema);
+  }
+  .nav-logo svg{width:28px;height:28px}
+  .nav-logo span{
+    font-size:.78rem;
+    letter-spacing:.22em;
+    font-weight:400;
+  }
+  .nav-links{
+    display:flex;align-items:center;gap:clamp(16px,3vw,32px);
+  }
+  .nav-links a{
+    font-size:.76rem;
+    letter-spacing:.14em;
+    color:var(--crema-45);
+    text-decoration:none;
+    transition:color .15s;
+  }
+  .nav-links a:hover{color:var(--crema)}
+  .nav-cta{
+    display:inline-flex;align-items:center;gap:.4em;
+    padding:.55em 1.1em;
     border-radius:980px;
     background:var(--ambar);
     color:var(--verde);
-    font-size:.85rem;
-    font-weight:400;
-    letter-spacing:.06em;
+    font-size:.78rem;
+    font-weight:500;
+    letter-spacing:.04em;
     text-decoration:none;
-    box-shadow:0 6px 20px rgba(0,0,0,.25);
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:opacity .15s;
   }
-  .cta-sorteo:hover{ transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
-  .cta-sorteo:active{ transform:translateY(0); }
+  .nav-cta:hover{opacity:.88}
+  @media(max-width:600px){
+    .nav-links a:not(.nav-cta){display:none}
+  }
 
-  /* ── PORTADA ───────────────────────────── */
+  /* ── PORTADA ────────────────────────────── */
   .portada{
     position:relative;
     min-height:100svh;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
     text-align:center;
-    padding:8vh 0 10vh;
+    padding:80px 0 10vh;
   }
   .portada::before{
-    content:'';
-    position:absolute;
-    inset:0;
+    content:'';position:absolute;inset:0;
     background:url('plaza-calanda.png') center 40%/cover no-repeat;
-    opacity:.18;
-    pointer-events:none;
-    image-rendering:auto;
-    -webkit-image-rendering:auto;
+    opacity:.15;pointer-events:none;
   }
-  @media (min-width:1560px){
-    .portada::before{
-      background-size:contain;
-      background-position:center center;
-    }
-  }
-  .portada>*{position:relative; z-index:1}
+  .portada>*{position:relative;z-index:1}
 
-  .marca svg{
-    width:clamp(52px,9vw,78px);
-    height:auto;
-    display:block;
-    margin:0 auto clamp(22px,4vh,38px);
+  .eyebrow-line{
+    display:flex;align-items:center;gap:16px;
+    margin-bottom:clamp(32px,6vh,56px);
+  }
+  .eyebrow-line::before,
+  .eyebrow-line::after{
+    content:'';flex:1;height:1px;
+    background:var(--ambar);opacity:.4;
+    max-width:60px;
+  }
+  .eyebrow-line span{
+    font-size:.68rem;
+    letter-spacing:.36em;
+    color:var(--ambar);
+    white-space:nowrap;
   }
 
-  .marca .linea1,
-  .marca .linea2{
+  .marca-hero{text-align:center}
+  .marca-hero .la{
     display:block;
+    font-family:var(--sans);
+    font-size:clamp(1.4rem,4.8vw,2.4rem);
     font-weight:400;
+    letter-spacing:.38em;
+    text-indent:.38em;
     color:var(--crema);
-    line-height:1.02;
+    line-height:1;
   }
-  .marca .linea1{
-    font-size:clamp(1.6rem,5.6vw,2.9rem);
-    letter-spacing:.34em;
-    text-indent:.34em;
-  }
-  .marca .linea2{
-    font-size:clamp(2.5rem,10.4vw,5.4rem);
-    letter-spacing:.10em;
-    text-indent:.10em;
-    margin-top:.12em;
-  }
-
-  .claim{
-    margin-top:clamp(28px,5vh,46px);
-    font-size:clamp(1rem,3.4vw,1.35rem);
+  .marca-hero .sobremesa{
+    display:block;
+    font-family:var(--serif);
+    font-size:clamp(3.2rem,13vw,7.2rem);
+    font-weight:400;
+    font-style:italic;
     letter-spacing:.02em;
+    color:var(--crema);
+    line-height:.92;
+    margin-top:.08em;
+  }
+
+  .hero-sub{
+    margin-top:clamp(28px,5vh,48px);
+    font-family:var(--serif);
+    font-size:clamp(1.1rem,3.6vw,1.55rem);
+    font-weight:400;
+    line-height:1.45;
     color:var(--crema-70);
+    max-width:18em;
   }
 
-  .baja{
-    margin-top:auto;
-    padding-top:9vh;
-    font-size:.72rem;
-    letter-spacing:.3em;
-    text-indent:.3em;
+  .hero-ctas{
+    margin-top:clamp(32px,5vh,48px);
+    display:flex;align-items:center;gap:clamp(16px,3vw,28px);
+    flex-wrap:wrap;justify-content:center;
+  }
+  .btn-sorteo{
+    display:inline-flex;align-items:center;gap:.5em;
+    padding:.8em 1.5em;
+    border-radius:980px;
+    background:var(--ambar);
+    color:var(--verde);
+    font-size:.9rem;
+    font-weight:500;
+    letter-spacing:.04em;
+    text-decoration:none;
+    transition:opacity .15s,transform .1s;
+  }
+  .btn-sorteo:hover{opacity:.88}
+  .btn-sorteo:active{transform:scale(.97)}
+  .link-plan{
+    font-size:.76rem;
+    letter-spacing:.2em;
     color:var(--crema-45);
+    text-decoration:none;
+    transition:color .15s;
   }
-  .baja span{display:block; margin-top:.9em; font-size:1.15rem; letter-spacing:0; text-indent:0}
+  .link-plan:hover{color:var(--crema)}
 
-  /* ── TEXTO ─────────────────────────────── */
-  section{padding:clamp(56px,11vh,110px) 0}
+  /* ── EYEBROW SECCIÓN ────────────────────── */
+  .seccion-eyebrow{
+    font-size:.68rem;
+    letter-spacing:.32em;
+    color:var(--ambar);
+    margin-bottom:clamp(20px,3vh,32px);
+  }
+
+  /* ── TÍTULO EDITORIAL ───────────────────── */
+  .titulo-editorial{
+    font-family:var(--serif);
+    font-size:clamp(2rem,7.6vw,3.6rem);
+    font-weight:400;
+    font-style:italic;
+    line-height:1.15;
+    color:var(--crema);
+    margin-bottom:clamp(28px,5vh,48px);
+    max-width:14em;
+  }
+
+  /* ── TEXTO ──────────────────────────────── */
+  section{padding:clamp(64px,12vh,120px) 0}
 
   p{
     font-size:var(--paso);
     margin-bottom:1.35em;
     color:var(--crema-70);
-    max-width:34em;
+    max-width:38em;
   }
-  p.fuerte{color:var(--crema)}
+  p.fuerte{color:var(--crema);font-weight:400}
   p:last-child{margin-bottom:0}
 
-  .voz{
-    font-size:clamp(1.45rem,5.6vw,2.35rem);
-    line-height:1.28;
-    font-weight:300;
-    color:var(--crema);
-    max-width:15em;
-    margin:clamp(34px,6vh,56px) 0;
+  .cita-ambar{
+    font-family:var(--serif);
+    font-size:clamp(1.3rem,5vw,2.1rem);
+    font-style:italic;
+    line-height:1.35;
+    color:var(--ambar);
+    max-width:22em;
+    margin:clamp(36px,6vh,56px) 0;
   }
-  .voz small{
-    display:block;
-    font-size:.42em;
-    letter-spacing:.24em;
-    text-indent:.24em;
-    color:var(--crema-45);
-    margin-top:1.5em;
-    line-height:1.6;
+
+  .dos-cols{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(24px,4vw,40px);
+    margin-top:clamp(28px,5vh,44px);
+  }
+  .dos-cols p{
+    font-size:clamp(.92rem,.85rem + .35vw,1.05rem);
+    margin-bottom:0;
+  }
+  @media(max-width:560px){
+    .dos-cols{grid-template-columns:1fr}
   }
 
   hr{
-    border:0;
-    height:1px;
+    border:0;height:1px;
     background:var(--crema-18);
     margin:clamp(46px,8vh,84px) 0;
   }
 
-  /* ── RECUPERAR ─────────────────────────── */
+  /* ── RECUPERAR ──────────────────────────── */
   .recuperar{
     list-style:none;
     margin:clamp(30px,5vh,48px) 0 0;
@@ -183,9 +268,9 @@
     color:var(--crema);
   }
   .recuperar li:first-child{border-top:1px solid var(--crema-18)}
-  .recuperar li b{font-weight:300; color:var(--crema-45)}
+  .recuperar li b{font-weight:300;color:var(--crema-45)}
 
-  /* ── EL DÍA ────────────────────────────── */
+  /* ── EL DÍA ─────────────────────────────── */
   .rotulo{
     font-size:.72rem;
     letter-spacing:.3em;
@@ -205,10 +290,8 @@
   }
   .dia li:first-child{border-top:1px solid var(--crema-18)}
   .dia .hora{
-    font-size:.86rem;
-    letter-spacing:.12em;
-    color:var(--crema-45);
-    font-variant-numeric:tabular-nums;
+    font-size:.86rem;letter-spacing:.12em;
+    color:var(--crema-45);font-variant-numeric:tabular-nums;
   }
   .dia .que{
     font-size:clamp(1.05rem,3.9vw,1.4rem);
@@ -225,20 +308,21 @@
     max-width:30em;
   }
 
-  /* ── CIERRE ────────────────────────────── */
+  /* ── CIERRE ─────────────────────────────── */
   .cierre{
-    min-height:88svh;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
+    min-height:80svh;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
     text-align:center;
   }
-  .cierre svg{width:44px; height:auto; margin-bottom:clamp(30px,5vh,48px)}
+  .cierre svg{width:44px;height:auto;margin-bottom:clamp(30px,5vh,48px)}
   .cierre .grande{
-    font-size:clamp(1.9rem,7.6vw,3.4rem);
-    line-height:1.18;
+    font-family:var(--serif);
+    font-size:clamp(2.4rem,9vw,4.4rem);
+    font-style:italic;
+    line-height:1.12;
     color:var(--crema);
     font-weight:400;
-    letter-spacing:.01em;
   }
   .cierre .esencia{
     margin-top:clamp(34px,6vh,56px);
@@ -248,25 +332,19 @@
     color:var(--crema-45);
     line-height:2;
   }
-  .pie{
-    margin:clamp(56px,10vh,96px) 0 clamp(40px,7vh,64px);
-    text-align:center;
-    font-size:.74rem;
-    letter-spacing:.18em;
-    color:var(--crema-45);
-  }
 
-  /* ── SORTEO (formulario embebido) ───────── */
-  .seccion-sorteo{ scroll-margin-top:24px; }
+  /* ── SORTEO ─────────────────────────────── */
+  .seccion-sorteo{scroll-margin-top:80px}
   .sorteo-cabecera{
     text-align:center;
     margin-bottom:clamp(28px,5vh,40px);
   }
   .sorteo-cabecera h2{
     margin:12px 0 12px;
+    font-family:var(--serif);
     font-size:clamp(1.9rem,7vw,2.6rem);
     font-weight:400;
-    letter-spacing:.01em;
+    font-style:italic;
     line-height:1.15;
     color:var(--crema);
   }
@@ -279,195 +357,186 @@
   }
 
   .tarjeta{
-    background:var(--crema-18);
-    background:rgba(240,221,184,.08);
+    background:var(--crema-08);
     border:1px solid var(--crema-18);
     border-radius:20px;
     padding:30px 24px 24px;
   }
 
-  .campo{ margin-bottom:26px; }
-  .campo:last-of-type{ margin-bottom:0; }
-
+  .campo{margin-bottom:26px}
+  .campo:last-of-type{margin-bottom:0}
   .etiqueta{
-    display:block;
-    font-size:.92rem;
-    font-weight:400;
-    margin-bottom:12px;
-    letter-spacing:.02em;
-    color:var(--crema);
+    display:block;font-size:.92rem;font-weight:400;
+    margin-bottom:12px;letter-spacing:.02em;color:var(--crema);
   }
 
   input[type="text"]{
-    width:100%;
-    padding:14px 16px;
-    border:1px solid var(--crema-18);
-    border-radius:12px;
-    background:rgba(0,0,0,.15);
-    color:var(--crema);
-    font-size:1rem;
-    font-family:inherit;
-    font-weight:300;
-    outline:none;
-    transition:border-color .18s ease, background .18s ease;
+    width:100%;padding:14px 16px;
+    border:1px solid var(--crema-18);border-radius:12px;
+    background:rgba(0,0,0,.15);color:var(--crema);
+    font-size:1rem;font-family:inherit;font-weight:300;outline:none;
+    transition:border-color .18s ease,background .18s ease;
   }
-  input[type="text"]::placeholder{ color:var(--crema-45); }
-  input[type="text"]:focus{
-    border-color:var(--ambar);
-    background:rgba(0,0,0,.22);
-  }
+  input[type="text"]::placeholder{color:var(--crema-45)}
+  input[type="text"]:focus{border-color:var(--ambar);background:rgba(0,0,0,.22)}
 
   .opciones{
-    display:flex;
-    gap:6px;
-    background:rgba(0,0,0,.15);
-    border-radius:980px;
-    padding:4px;
+    display:flex;gap:6px;
+    background:rgba(0,0,0,.15);border-radius:980px;padding:4px;
   }
-  .opcion{ flex:1; position:relative; }
+  .opcion{flex:1;position:relative}
   .opcion input{
-    position:absolute; opacity:0; inset:0;
-    width:100%; height:100%; cursor:pointer; margin:0;
+    position:absolute;opacity:0;inset:0;
+    width:100%;height:100%;cursor:pointer;margin:0;
   }
   .opcion span{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:10px 6px;
-    border-radius:980px;
-    font-size:.88rem;
-    font-weight:300;
-    color:var(--crema-70);
-    transition:.16s ease;
-    min-height:38px;
-    line-height:1.25;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:10px 6px;border-radius:980px;
+    font-size:.88rem;font-weight:300;color:var(--crema-70);
+    transition:.16s ease;min-height:38px;line-height:1.25;
   }
   .opcion input:checked + span{
-    background:var(--ambar);
-    color:var(--verde);
-    font-weight:400;
+    background:var(--ambar);color:var(--verde);font-weight:400;
   }
   .opcion input:focus-visible + span{
-    outline:2px solid var(--ambar);
-    outline-offset:2px;
+    outline:2px solid var(--ambar);outline-offset:2px;
   }
-  .opcion span:active{ transform:scale(.97); }
+  .opcion span:active{transform:scale(.97)}
 
-  .campo-error{
-    font-size:.8rem;
-    color:#e8735a;
-    margin-top:8px;
-    display:none;
-  }
+  .campo-error{font-size:.8rem;color:#e8735a;margin-top:8px;display:none}
 
   button[type="submit"]{
-    width:100%;
-    margin-top:6px;
-    padding:15px;
-    border:none;
-    border-radius:980px;
-    background:var(--ambar);
-    color:var(--verde);
-    font-size:1rem;
-    font-family:inherit;
-    font-weight:400;
-    letter-spacing:.02em;
-    cursor:pointer;
-    transition:opacity .15s ease, transform .1s ease;
+    width:100%;margin-top:6px;padding:15px;
+    border:none;border-radius:980px;
+    background:var(--ambar);color:var(--verde);
+    font-size:1rem;font-family:inherit;font-weight:400;
+    letter-spacing:.02em;cursor:pointer;
+    transition:opacity .15s ease,transform .1s ease;
   }
-  button[type="submit"]:hover{ opacity:.9; }
-  button[type="submit"]:active{ transform:scale(.985); }
-  button[type="submit"]:disabled{ opacity:.5; cursor:default; }
+  button[type="submit"]:hover{opacity:.9}
+  button[type="submit"]:active{transform:scale(.985)}
+  button[type="submit"]:disabled{opacity:.5;cursor:default}
 
   .mensaje{
-    margin-top:16px;
-    padding:13px 14px;
-    border-radius:12px;
-    text-align:center;
-    font-size:.9rem;
-    font-weight:400;
-    border:1px solid transparent;
-    display:none;
+    margin-top:16px;padding:13px 14px;border-radius:12px;
+    text-align:center;font-size:.9rem;font-weight:400;
+    border:1px solid transparent;display:none;
   }
   .mensaje.ok{
     display:block;
-    background:rgba(201,149,75,.14);
-    border-color:rgba(201,149,75,.35);
+    background:rgba(201,149,75,.14);border-color:rgba(201,149,75,.35);
     color:var(--ambar);
   }
   .mensaje.error{
     display:block;
-    background:rgba(232,115,90,.12);
-    border-color:rgba(232,115,90,.3);
+    background:rgba(232,115,90,.12);border-color:rgba(232,115,90,.3);
     color:#e8735a;
   }
 
-  /* ── APARICIÓN ─────────────────────────── */
-  .surge{opacity:0; transform:translateY(14px); transition:opacity .9s ease, transform .9s ease}
-  .surge.dentro{opacity:1; transform:none}
+  .pie{
+    margin:clamp(40px,7vh,64px) 0 clamp(32px,5vh,48px);
+    text-align:center;
+    font-size:.74rem;letter-spacing:.18em;color:var(--crema-45);
+  }
 
-  @media (prefers-reduced-motion:reduce){
+  /* ── BARRA INFERIOR ─────────────────────── */
+  .barra-inferior{
+    position:fixed;bottom:0;left:0;right:0;z-index:100;
+    height:56px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(16px,4vw,32px);
+    background:rgba(23,52,37,.94);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-top:1px solid var(--crema-18);
+  }
+  .barra-inferior .pregunta{
+    font-size:.72rem;
+    letter-spacing:.24em;
+    color:var(--crema-45);
+  }
+  .barra-inferior .btn-sorteo{
+    font-size:.8rem;
+    padding:.55em 1.2em;
+  }
+
+  /* ── APARICIÓN ──────────────────────────── */
+  .surge{opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease}
+  .surge.dentro{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
-    .surge{opacity:1; transform:none; transition:none}
+    .surge{opacity:1;transform:none;transition:none}
+  }
+
+  @media(max-width:380px){
+    .tarjeta{padding:24px 18px 20px}
   }
 </style>
 </head>
 <body>
 <div class="grano"></div>
 
-<a href="#sorteo" class="cta-sorteo">🎁 Sorteo</a>
-
-<!-- PORTADA -->
-<header class="portada marco">
-  <div class="marca">
-    <svg viewBox="0 0 100 100" aria-label="La Sobremesa">
-      <g stroke="#F0DDB8" stroke-width="5.4" stroke-linecap="round" fill="none">
-        <path d="M50 12 L50.6 88"/>
-        <path d="M12 50.4 L88 49.6"/>
-        <path d="M23.4 23 L76.8 77.2"/>
-        <path d="M77 23.4 L23.2 76.8"/>
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <g stroke="#F0DDB8" stroke-width="6" stroke-linecap="round" fill="none">
+        <path d="M50 12 L50.6 88"/><path d="M12 50.4 L88 49.6"/>
+        <path d="M23.4 23 L76.8 77.2"/><path d="M77 23.4 L23.2 76.8"/>
       </g>
     </svg>
-    <span class="linea1">LA</span>
-    <span class="linea2">SOBREMESA</span>
+    <span>LA SOBREMESA</span>
+  </a>
+  <div class="nav-links">
+    <a href="#la-idea">LA IDEA</a>
+    <a href="#el-plan">EL PLAN</a>
+    <a href="#sorteo" class="nav-cta">Apúntate al sorteo ↗</a>
+  </div>
+</nav>
+
+<!-- PORTADA -->
+<header class="portada">
+  <div class="eyebrow-line surge">
+    <span>UNA INVITACIÓN A QUEDARTE</span>
   </div>
 
-  <p class="claim">Quédate un rato más.</p>
+  <div class="marca-hero surge">
+    <span class="la">LA</span>
+    <span class="sobremesa">Sobremesa</span>
+  </div>
 
-  <div class="baja">
-    CALANDA
-    <span>↓</span>
+  <p class="hero-sub surge">El plan que empieza con un vermú y termina cuando nadie quiere irse.</p>
+
+  <div class="hero-ctas surge">
+    <a href="#sorteo" class="btn-sorteo">🎁 Apúntate al sorteo ↗</a>
+    <a href="#la-idea" class="link-plan">DESCUBRE EL PLAN ↓</a>
   </div>
 </header>
 
 <!-- LA IDEA -->
-<section class="marco">
-  <p class="surge fuerte">La idea nace de algo muy sencillo: volver a nuestra esencia.</p>
-  <p class="surge">Porque antes había cosas que hacíamos de una manera mucho más natural y que, poco a poco, hemos ido perdiendo. No teníamos tanta prisa.</p>
-  <p class="surge">Te sentabas a comer y no estabas mirando el móvil. No estabas pendiente de la hora ni pensando constantemente en qué venía después. Simplemente estabas ahí, disfrutando del momento y de estar con los demás.</p>
-</section>
+<section id="la-idea" class="marco">
+  <p class="seccion-eyebrow surge">LA IDEA</p>
+  <h2 class="titulo-editorial surge">Volver a<br>estar ahí.</h2>
 
-<!-- LA CADENA -->
-<section class="marco">
+  <p class="surge fuerte">Antes no teníamos tanta prisa. Te sentabas a comer y no estabas mirando el móvil. No estabas pendiente de la hora ni pensando en qué venía después.</p>
   <p class="surge">Terminabas de comer y llegaba el café. El café se convertía en una copa. Alguien proponía una partida. Se acercaba otra persona. Empezaban las conversaciones. Llegaba otra ronda.</p>
 
-  <p class="voz surge">«¿Nos quedamos un rato más?»<small>Y ese rato acababa siendo otra hora.</small></p>
+  <p class="cita-ambar surge">Y cuando parecía que ya tocaba irse, siempre aparecía alguien diciendo: «¿Nos quedamos un rato más?»</p>
 
-  <p class="surge">Se te iba liando poco a poco. Y precisamente ahí estaba la gracia. No hacía falta tenerlo todo planificado. No había que saber exactamente qué iba a pasar después.</p>
-  <p class="surge fuerte">El plan era estar juntos.</p>
+  <div class="dos-cols surge">
+    <p>Precisamente ahí estaba la gracia. No hacía falta tenerlo todo planificado. El plan era estar juntos.</p>
+    <p>La Sobremesa es ese momento en el que dejas de mirar el reloj y te dejas llevar. Una cosa lleva a la otra porque estás a gusto.</p>
+  </div>
 </section>
 
 <hr class="marco">
 
-<!-- QUÉ ES -->
-<section class="marco">
-  <p class="surge">La Sobremesa es ese momento en el que dejas de mirar el reloj y simplemente te dejas llevar. Cuando una cosa lleva a la otra y el plan se alarga porque, sencillamente, estás a gusto y no quieres que se acabe.</p>
-</section>
-
 <!-- RECUPERAR -->
 <section class="marco">
-  <p class="rotulo surge">SE TRATA DE RECUPERAR</p>
+  <p class="seccion-eyebrow surge">LO QUE VENIMOS A RECUPERAR</p>
+  <h2 class="titulo-editorial surge">Una forma<br>de estar.</h2>
+
   <ul class="recuperar">
     <li class="surge"><b>Recuperar</b> el vermú.</li>
     <li class="surge"><b>Recuperar</b> las partidas.</li>
@@ -483,8 +552,9 @@
 <hr class="marco">
 
 <!-- EL DÍA -->
-<section class="marco">
-  <p class="rotulo surge">CÓMO SE VA LIANDO</p>
+<section id="el-plan" class="marco">
+  <p class="seccion-eyebrow surge">CÓMO SE VA LIANDO</p>
+  <h2 class="titulo-editorial surge">El plan.</h2>
   <ul class="dia">
     <li class="surge"><span class="hora">11:30</span><span class="que">Un vermú</span></li>
     <li class="surge"><span class="hora">12:30</span><span class="que">Una partida de guiñote</span></li>
@@ -509,20 +579,18 @@
 <footer class="cierre marco">
   <svg viewBox="0 0 100 100" aria-hidden="true">
     <g stroke="#C9954B" stroke-width="5.4" stroke-linecap="round" fill="none">
-      <path d="M50 12 L50.6 88"/>
-      <path d="M12 50.4 L88 49.6"/>
-      <path d="M23.4 23 L76.8 77.2"/>
-      <path d="M77 23.4 L23.2 76.8"/>
+      <path d="M50 12 L50.6 88"/><path d="M12 50.4 L88 49.6"/>
+      <path d="M23.4 23 L76.8 77.2"/><path d="M77 23.4 L23.2 76.8"/>
     </g>
   </svg>
-  <p class="grande">Quédate<br>un rato más.</p>
-  <p class="esencia">RECUPEREMOS<br>NUESTRA ESENCIA</p>
+  <p class="grande surge">Quédate<br>un rato más.</p>
+  <p class="esencia surge">RECUPEREMOS<br>NUESTRA ESENCIA</p>
 </footer>
 
-<!-- SORTEO (formulario embebido) -->
+<!-- SORTEO -->
 <section id="sorteo" class="marco seccion-sorteo">
   <div class="sorteo-cabecera">
-    <p class="rotulo surge">LA SOBREMESA · CALANDA</p>
+    <p class="seccion-eyebrow surge">LA SOBREMESA · CALANDA</p>
     <h2 class="surge">Apúntate al sorteo</h2>
     <p class="sub surge">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
   </div>
@@ -579,8 +647,13 @@
   <p class="pie">LA SOBREMESA · CALANDA</p>
 </section>
 
+<!-- BARRA INFERIOR -->
+<div class="barra-inferior">
+  <span class="pregunta">¿NOS QUEDAMOS?</span>
+  <a href="#sorteo" class="btn-sorteo">🎁 Apúntate al sorteo ↗</a>
+</div>
+
 <script>
-  // EDITA AQUÍ: pega la URL de tu Google Apps Script (termina en /exec).
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0aVuWbeX2yDEinbCwkYfUCIquFZAo6QKLvQhd5nlrytnkSqLjd-Gqo3xO4nJRmt4_/exec';
 
   const formSorteo = document.getElementById('form-sorteo');
@@ -622,8 +695,6 @@
     btnEnviar.textContent = 'Enviando...';
 
     try {
-      // mode:'no-cors' porque el Web App de Apps Script no puede leerse
-      // desde otro origen; el envío llega igualmente y se guarda en la hoja.
       await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: datos });
       formSorteo.reset();
       mostrarMensaje('Gracias, ya estás dentro del sorteo.', 'ok');
