@@ -861,6 +861,10 @@
     <p class="sub">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
 
     <div class="tarjeta">
+      <div id="ya-participa" style="display:none;text-align:center;padding:20px 0">
+        <p style="font-size:1.1rem;color:var(--ambar);font-weight:400;margin-bottom:8px">Ya estás apuntado</p>
+        <p style="font-size:.9rem;color:var(--crema-70)">Gracias por participar en el sorteo. Nos vemos en La Sobremesa.</p>
+      </div>
       <form id="form-sorteo" novalidate>
 
         <div class="campo">
@@ -928,6 +932,14 @@
   const errorNombre = document.getElementById('error-nombre');
   const errorAsiste = document.getElementById('error-asiste');
   const errorCena = document.getElementById('error-cena');
+  const yaParticipa = document.getElementById('ya-participa');
+
+  try {
+    if (localStorage.getItem('sobremesa-participado')) {
+      formSorteo.style.display = 'none';
+      yaParticipa.style.display = 'block';
+    }
+  } catch(e) {}
 
   function mostrarMensaje(texto, tipo) {
     mensaje.textContent = texto;
@@ -962,8 +974,9 @@
 
     try {
       await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: datos });
-      formSorteo.reset();
-      mostrarMensaje('Gracias, ya estás dentro del sorteo.', 'ok');
+      try { localStorage.setItem('sobremesa-participado', '1'); } catch(e) {}
+      formSorteo.style.display = 'none';
+      yaParticipa.style.display = 'block';
     } catch (e) {
       mostrarMensaje('No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.', 'error');
     } finally {
