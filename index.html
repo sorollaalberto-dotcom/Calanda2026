@@ -869,8 +869,14 @@
 
         <div class="campo">
           <label class="etiqueta" for="nombre">Nombre</label>
-          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" maxlength="80" autocomplete="name" required>
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" maxlength="80" autocomplete="given-name" required>
           <div class="campo-error" id="error-nombre">Escribe tu nombre.</div>
+        </div>
+
+        <div class="campo">
+          <label class="etiqueta" for="apellidos">Apellidos</label>
+          <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" maxlength="120" autocomplete="family-name" required>
+          <div class="campo-error" id="error-apellidos">Escribe tus apellidos.</div>
         </div>
 
         <div class="campo">
@@ -930,6 +936,7 @@
   const btnEnviar = document.getElementById('btn-enviar');
   const mensaje = document.getElementById('mensaje');
   const errorNombre = document.getElementById('error-nombre');
+  const errorApellidos = document.getElementById('error-apellidos');
   const errorAsiste = document.getElementById('error-asiste');
   const errorCena = document.getElementById('error-cena');
   const yaParticipa = document.getElementById('ya-participa');
@@ -950,16 +957,19 @@
     evento.preventDefault();
     mensaje.className = 'mensaje';
     errorNombre.style.display = 'none';
+    errorApellidos.style.display = 'none';
     errorAsiste.style.display = 'none';
     errorCena.style.display = 'none';
 
     const datos = new FormData(formSorteo);
     const nombre = datos.get('nombre').trim();
+    const apellidos = datos.get('apellidos').trim();
     const asiste = datos.get('asiste');
     const cena = datos.get('cena');
 
     let valido = true;
     if (!nombre) { errorNombre.style.display = 'block'; valido = false; }
+    if (!apellidos) { errorApellidos.style.display = 'block'; valido = false; }
     if (!asiste) { errorAsiste.style.display = 'block'; valido = false; }
     if (!cena) { errorCena.style.display = 'block'; valido = false; }
     if (!valido) return;
