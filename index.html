@@ -861,9 +861,9 @@
     <p class="sub">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
 
     <div class="tarjeta">
-      <div id="ya-participa" style="display:none;text-align:center;padding:20px 0">
-        <p style="font-size:1.1rem;color:var(--ambar);font-weight:400;margin-bottom:8px">Ya estás apuntado</p>
-        <p style="font-size:.9rem;color:var(--crema-70)">Gracias por participar en el sorteo. Nos vemos en La Sobremesa.</p>
+      <div id="ya-participa" style="display:none;text-align:center;padding:12px 0 20px">
+        <p style="font-size:.92rem;color:var(--ambar);font-weight:400;margin-bottom:4px">Ya participaste con este nombre.</p>
+        <p style="font-size:.82rem;color:var(--crema-70)">Si quieres cambiar alguna respuesta, modifícala y envía de nuevo.</p>
       </div>
       <form id="form-sorteo" novalidate>
 
@@ -941,12 +941,25 @@
   const errorCena = document.getElementById('error-cena');
   const yaParticipa = document.getElementById('ya-participa');
 
+  let datosGuardados = null;
   try {
-    if (localStorage.getItem('sobremesa-participado')) {
-      formSorteo.style.display = 'none';
-      yaParticipa.style.display = 'block';
-    }
+    const raw = localStorage.getItem('sobremesa-datos');
+    if (raw) datosGuardados = JSON.parse(raw);
   } catch(e) {}
+
+  if (datosGuardados) {
+    document.getElementById('nombre').value = datosGuardados.nombre || '';
+    document.getElementById('apellidos').value = datosGuardados.apellidos || '';
+    if (datosGuardados.asiste) {
+      const r = formSorteo.querySelector('input[name="asiste"][value="'+datosGuardados.asiste+'"]');
+      if (r) r.checked = true;
+    }
+    if (datosGuardados.cena) {
+      const r = formSorteo.querySelector('input[name="cena"][value="'+datosGuardados.cena+'"]');
+      if (r) r.checked = true;
+    }
+    yaParticipa.style.display = 'block';
+  }
 
   function mostrarMensaje(texto, tipo) {
     mensaje.textContent = texto;
@@ -974,6 +987,16 @@
     if (!cena) { errorCena.style.display = 'block'; valido = false; }
     if (!valido) return;
 
+    const nuevos = { nombre, apellidos, asiste, cena };
+    if (datosGuardados &&
+        datosGuardados.nombre === nombre &&
+        datosGuardados.apellidos === apellidos &&
+        datosGuardados.asiste === asiste &&
+        datosGuardados.cena === cena) {
+      mostrarMensaje('Ya estás apuntado con estos mismos datos.', 'error');
+      return;
+    }
+
     if (SCRIPT_URL.includes('PEGA_AQUI_TU_ID_DE_DESPLIEGUE')) {
       mostrarMensaje('Falta configurar la URL de Google Apps Script.', 'error');
       return;
@@ -984,9 +1007,10 @@
 
     try {
       await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: datos });
-      try { localStorage.setItem('sobremesa-participado', '1'); } catch(e) {}
-      formSorteo.style.display = 'none';
+      try { localStorage.setItem('sobremesa-datos', JSON.stringify(nuevos)); } catch(e) {}
+      datosGuardados = nuevos;
       yaParticipa.style.display = 'block';
+      mostrarMensaje(datosGuardados ? 'Respuestas actualizadas.' : 'Gracias, ya estás dentro del sorteo.', 'ok');
     } catch (e) {
       mostrarMensaje('No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.', 'error');
     } finally {
