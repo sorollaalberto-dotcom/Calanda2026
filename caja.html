@@ -849,9 +849,10 @@
             : 'Escribe el PIN del grupo. Solo hace falta la primera vez en este móvil.') +
         '</div>' +
         '<div class="campo"><span class="icono">🔑</span>' +
-          /* Sin inputmode numérico: el PIN puede llevar letras y en el móvil
-             saldría el teclado de números. */
-          '<input id="f-pin" type="password" autocomplete="off" ' +
+          /* Teclado numérico: el PIN del grupo son dígitos. Si algún día se
+             cambia por uno con letras, hay que quitar el inputmode o en el
+             móvil no habrá manera de escribirlo. */
+          '<input id="f-pin" type="password" inputmode="numeric" autocomplete="off" ' +
                  'autocapitalize="none" autocorrect="off" spellcheck="false" ' +
                  'placeholder="PIN" value=""></div>' +
         '<div style="margin-top:14px">' +
