@@ -320,6 +320,35 @@
   }
   .aviso.error{ background:#FCEDEC; color:var(--rojo); border:1px solid #F0C9C6; }
 
+  /* ---------- estado de sincronizacion ---------- */
+
+  .sync{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; margin:0 0 16px;
+    padding:9px 14px;
+    border:1px solid var(--borde); border-radius:20px;
+    background:var(--tarjeta); color:var(--gris);
+    font-family:inherit; font-size:11.5px; font-weight:600;
+    letter-spacing:.2px; cursor:pointer;
+    transition:opacity .2s;
+  }
+  .sync:active{ opacity:.6; }
+  .sync .punto{
+    width:6px; height:6px; border-radius:3px;
+    background:var(--gris-3); flex:none;
+  }
+  .sync.bien .punto{ background:#4CAF50; }
+  .sync.mal{ color:var(--rojo); border-color:#F0C9C6; background:#FCEDEC; }
+  .sync.mal .punto{ background:var(--rojo); }
+
+  .mov .sin-guardar{
+    display:inline-block; margin-left:8px;
+    padding:1px 7px; border-radius:8px;
+    background:#FBF0DC; color:#8A6A2F;
+    font-size:9.5px; font-weight:700; letter-spacing:.4px;
+    vertical-align:middle;
+  }
+
   /* ---------- pie ---------- */
 
   .pie{ text-align:center; margin-top:24px; padding-bottom:8px; }
@@ -343,6 +372,18 @@
 (function(){
   'use strict';
 
+  /* ==================================================================
+     CONFIGURACIÓN
+
+     Pega aquí la URL de la aplicación web de Google Apps Script
+     (termina en /exec). Los pasos están en el README.
+
+     Mientras esté vacía la página funciona igual, pero cada móvil
+     llevará su propia caja por separado: no habrá registro común.
+     ================================================================== */
+
+  var API = '';
+
   /* ============ datos fijos ============ */
 
   var FONDO = [
@@ -365,13 +406,16 @@
     { v:50,  l:'50€', cara:'💵' }
   ];
 
-  var CLAVE = 'sobremesa-caja';
+  var CLAVE     = 'sobremesa-caja';
+  var REFRESCO  = 25000;   // cada cuánto se mira si los demás han apuntado algo
 
   /* ============ estado ============ */
 
   var estado = {
-    movimientos: [],
-    portador: '',
+    movimientos: [],   // todo lo conocido, ordenado por hora
+    pendientes: [],    // movimientos aún no confirmados por la hoja
+    sync: API ? 'inicial' : 'local',   // local | inicial | ok | fallo | enviando
+    ultima: null,      // cuándo se sincronizó por última vez
     vista: 'principal',
     tipo: 'ingreso',
     denom: null,
@@ -384,13 +428,16 @@
     error: ''
   };
 
-  /* ============ persistencia ============ */
+  /* ============ persistencia local ============ */
+  /* La copia local no es el registro: es la caché que permite abrir la
+     página sin cobertura y no perder lo apuntado hasta que la hoja lo
+     confirme. */
 
   function guardar(){
     try{
       localStorage.setItem(CLAVE, JSON.stringify({
         movimientos: estado.movimientos,
-        portador: estado.portador
+        pendientes: estado.pendientes
       }));
     }catch(e){ /* modo privado o almacenamiento lleno: seguimos en memoria */ }
   }
@@ -400,10 +447,8 @@
       var crudo = localStorage.getItem(CLAVE);
       if(!crudo) return;
       var d = JSON.parse(crudo);
-      if(d && Array.isArray(d.movimientos)){
-        estado.movimientos = d.movimientos;
-        estado.portador = d.portador || '';
-      }
+      if(d && Array.isArray(d.movimientos)) estado.movimientos = d.movimientos;
+      if(d && Array.isArray(d.pendientes))  estado.pendientes  = d.pendientes;
     }catch(e){ /* dato ilegible: arrancamos limpio */ }
   }
 
@@ -415,28 +460,50 @@
 
   function hora(iso){
     var d = new Date(iso);
-    return d.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    if(isNaN(d)) return '';
+    return d.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  function esc(t){
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function ordenar(lista){
+    return lista.slice().sort(function(a, b){
+      return a.hora < b.hora ? -1 : (a.hora > b.hora ? 1 : 0);
+    });
+  }
+
+  /** Movimientos de la caja abierta ahora: los posteriores al último cierre. */
+  function actuales(){
+    var todos = estado.movimientos;
+    for(var i = todos.length - 1; i >= 0; i--){
+      if(todos[i].tipo === 'cierre') return todos.slice(i + 1);
+    }
+    return todos;
   }
 
   function saldo(){
-    return estado.movimientos.reduce(function(s, m){
+    return actuales().reduce(function(s, m){
       if(m.tipo === 'ingreso')  return s + m.cantidad;
       if(m.tipo === 'retirada') return s - m.cantidad;
       return s;
     }, 0);
   }
 
-  function esc(t){
-    return String(t).replace(/[&<>"']/g, function(c){
-      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
-    });
+  /** Quién tiene la caja: el último que la recibió, o quien la abrió. */
+  function portador(){
+    var lista = actuales();
+    for(var i = lista.length - 1; i >= 0; i--){
+      if(lista[i].hacia) return lista[i].hacia;
+    }
+    return lista.length ? lista[0].persona : '';
   }
 
-  function anadir(mov){
-    mov.id = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
-    mov.hora = new Date().toISOString();
-    estado.movimientos.push(mov);
-    guardar();
+  function pendiente(id){
+    return estado.pendientes.some(function(m){ return m.id === id; });
   }
 
   function opciones(lista, sel){
@@ -445,31 +512,146 @@
     }).join('');
   }
 
+  /* ============ alta de movimientos ============ */
+
+  function anadir(mov){
+    mov.id   = Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    mov.hora = new Date().toISOString();
+
+    estado.movimientos = ordenar(estado.movimientos.concat([mov]));
+    if(API) estado.pendientes.push(mov);
+    guardar();
+
+    sincronizar();
+  }
+
+  /* ============ sincronización con la hoja ============ */
+
+  /* Enviamos con URLSearchParams a propósito: así la petición es "simple"
+     y el navegador no lanza un preflight, que Apps Script no sabe atender. */
+
+  function enviar(mov){
+    var cuerpo = new URLSearchParams({
+      origen:   'caja',
+      id:       mov.id,
+      fecha:    mov.hora,
+      tipo:     mov.tipo,
+      cantidad: String(mov.cantidad),
+      concepto: mov.concepto || '',
+      persona:  mov.persona  || '',
+      denom:    mov.denom    || '',
+      hacia:    mov.hacia    || ''
+    });
+
+    return fetch(API, { method:'POST', body: cuerpo })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(!d || !d.ok) throw new Error((d && d.error) || 'respuesta inesperada');
+        return true;
+      });
+  }
+
+  function descargar(){
+    return fetch(API + (API.indexOf('?') < 0 ? '?' : '&') + 'origen=caja&t=' + Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(!d || !d.ok || !Array.isArray(d.movimientos)) throw new Error('respuesta inesperada');
+        return d.movimientos;
+      });
+  }
+
+  var sincronizando = false;
+
+  function sincronizar(){
+    if(!API || sincronizando) return Promise.resolve();
+
+    sincronizando = true;
+    if(estado.sync !== 'inicial') estado.sync = 'enviando';
+    pintar();
+
+    /* Primero lo que este móvil debe; después traemos lo de todos.
+       El envío es idempotente en el script, así que reintentar es
+       seguro aunque no hayamos podido confirmar el anterior. */
+    var cola = estado.pendientes.slice();
+
+    var envios = cola.reduce(function(cadena, mov){
+      return cadena.then(function(){
+        return enviar(mov).then(function(){
+          estado.pendientes = estado.pendientes.filter(function(p){ return p.id !== mov.id; });
+          guardar();
+        });
+      });
+    }, Promise.resolve());
+
+    return envios
+      .then(descargar)
+      .then(function(remotos){
+        /* La hoja manda. Encima añadimos lo que aún no ha llegado a ella
+           para que quien apunta siga viendo lo suyo. */
+        var ids = {};
+        remotos.forEach(function(m){ ids[m.id] = true; });
+        var solosLocales = estado.pendientes.filter(function(m){ return !ids[m.id]; });
+
+        estado.movimientos = ordenar(remotos.concat(solosLocales));
+        estado.sync   = 'ok';
+        estado.ultima = new Date();
+        guardar();
+      })
+      .catch(function(){
+        estado.sync = 'fallo';
+      })
+      .then(function(){
+        sincronizando = false;
+        pintar();
+      });
+  }
+
+  function textoSync(){
+    if(estado.sync === 'local')    return 'Solo en este móvil · sin hoja conectada';
+    if(estado.sync === 'inicial')  return 'Cargando la caja…';
+    if(estado.sync === 'enviando') return 'Sincronizando…';
+
+    var falta = estado.pendientes.length;
+    if(estado.sync === 'fallo'){
+      return falta
+        ? 'Sin conexión · ' + falta + ' sin guardar'
+        : 'Sin conexión · mostrando lo último conocido';
+    }
+    if(falta) return falta + ' sin guardar';
+
+    if(!estado.ultima) return 'Al día';
+    var seg = Math.round((Date.now() - estado.ultima) / 1000);
+    if(seg < 60)   return 'Al día · hace un momento';
+    var min = Math.round(seg / 60);
+    if(min < 60)   return 'Al día · hace ' + min + ' min';
+    return 'Al día · ' + estado.ultima.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  function claseSync(){
+    if(estado.sync === 'fallo') return 'mal';
+    if(estado.sync === 'ok' && !estado.pendientes.length) return 'bien';
+    return '';
+  }
+
   /* ============ captura de formulario ============ */
   /* Guardamos lo escrito antes de repintar para no perderlo al pulsar
-     una denominación o cambiar de tipo. */
+     una denominación, al cambiar de tipo o al llegar una actualización
+     de la hoja mientras alguien escribe. */
 
   function capturar(){
-    var c = document.getElementById('f-cantidad');
-    if(c) estado.cantidad = c.value;
-    var k = document.getElementById('f-concepto');
-    if(k) estado.concepto = k.value;
-    var p = document.getElementById('f-persona');
-    if(p) estado.persona = p.value;
-    var de = document.getElementById('f-de');
-    if(de) estado.de = de.value;
-    var a = document.getElementById('f-a');
-    if(a) estado.a = a.value;
-    var t = document.getElementById('f-trasp');
-    if(t) estado.cantTrasp = t.value;
+    [['f-cantidad','cantidad'], ['f-concepto','concepto'], ['f-persona','persona'],
+     ['f-de','de'], ['f-a','a'], ['f-trasp','cantTrasp']].forEach(function(par){
+      var el = document.getElementById(par[0]);
+      if(el) estado[par[1]] = el.value;
+    });
   }
 
   function limpiarForm(){
-    estado.cantidad = '';
-    estado.concepto = '';
-    estado.denom = null;
+    estado.cantidad  = '';
+    estado.concepto  = '';
+    estado.denom     = null;
     estado.cantTrasp = '';
-    estado.error = '';
+    estado.error     = '';
   }
 
   /* ============ vistas ============ */
@@ -491,19 +673,25 @@
   }
 
   function vPrincipal(){
-    var s = saldo();
-    var n = estado.movimientos.length;
-    var h = vCabecera();
+    var s     = saldo();
+    var lista = actuales();
+    var n     = lista.length;
+    var quien = portador();
+    var h     = vCabecera();
 
     h += '<div class="tarjeta saldo surge">' +
            '<div class="piloto' + (s > 0 ? ' activo' : '') + '"></div>' +
            '<div class="rotulo">SALDO EN CAJA</div>' +
            '<div class="cifra' + (s > 0 ? ' latido' : '') + '">' + eur(s) + '</div>' +
-           (estado.portador
-             ? '<div class="portador"><span>👤</span><span>' + esc(estado.portador) + '</span></div>'
+           (quien
+             ? '<div class="portador"><span>👤</span><span>' + esc(quien) + '</span></div>'
              : '') +
            '<div class="cuenta">' + n + ' movimiento' + (n !== 1 ? 's' : '') + '</div>' +
          '</div>';
+
+    h += '<button class="sync ' + claseSync() + '" data-accion="sincronizar">' +
+           '<span class="punto"></span>' + esc(textoSync()) +
+         '</button>';
 
     if(n === 0){
       h += '<div class="acciones">' +
@@ -521,14 +709,16 @@
              '<div class="cabecera-lista"><div class="rotulo">MOVIMIENTOS</div></div>' +
              '<div class="lista">';
 
-      estado.movimientos.slice().reverse().forEach(function(m, i){
+      lista.slice().reverse().forEach(function(m, i){
         var signo = m.tipo === 'ingreso' ? '+' : (m.tipo === 'retirada' ? '−' : '⇄');
-        h += '<div class="mov entra" style="animation-delay:' + Math.min(i * 0.05, 0.4) + 's">' +
+        h += '<div class="mov entra" style="animation-delay:' + Math.min(i * 0.04, 0.32) + 's">' +
                '<div class="texto">' +
-                 '<div class="concepto">' + esc(m.concepto) + '</div>' +
+                 '<div class="concepto">' + esc(m.concepto) +
+                   (pendiente(m.id) ? '<span class="sin-guardar">sin guardar</span>' : '') +
+                 '</div>' +
                  '<div class="meta">' + hora(m.hora) + ' · ' + esc(m.persona) + '</div>' +
                '</div>' +
-               '<div class="importe ' + m.tipo + '">' + signo + eur(m.cantidad) + '</div>' +
+               '<div class="importe ' + esc(m.tipo) + '">' + signo + eur(m.cantidad) + '</div>' +
              '</div>';
       });
 
@@ -538,8 +728,11 @@
     h += '<div class="pie">' +
            '<div class="filete"></div>' +
            '<img class="esencia" src="logo-esencia.png" alt="Recuperemos la esencia">' +
-           '<div class="nota">Los datos se guardan en este navegador · No sustituye al arqueo físico</div>' +
-           (n > 0 ? '<button class="cerrar" data-accion="reiniciar">Cerrar caja y vaciar el registro</button>' : '') +
+           '<div class="nota">' +
+             (API ? 'Los movimientos quedan guardados en la hoja compartida'
+                  : 'Los datos se guardan solo en este navegador') +
+             ' · No sustituye al arqueo físico</div>' +
+           (n > 0 ? '<button class="cerrar" data-accion="cerrar">Cerrar caja</button>' : '') +
          '</div>';
 
     return h;
@@ -557,6 +750,11 @@
     });
 
     h += '<div class="fondo-total"><span>TOTAL</span><span>' + eur(TOTAL_FONDO) + '</span></div>' +
+         '<div style="margin-top:18px">' +
+           '<div class="rotulo" style="margin-bottom:10px">QUIÉN ABRE LA CAJA</div>' +
+           '<div class="campo"><span class="icono">👤</span>' +
+             '<select id="f-persona">' + opciones(PERSONAS, estado.persona) + '</select></div>' +
+         '</div>' +
          '</div></div>';
 
     h += '<div style="margin-top:16px">' +
@@ -596,9 +794,7 @@
 
     h += '</div></div>';
 
-    if(estado.error){
-      h += '<div class="aviso error surge">' + esc(estado.error) + '</div>';
-    }
+    if(estado.error) h += '<div class="aviso error surge">' + esc(estado.error) + '</div>';
 
     h += '<div class="pila surge">' +
            '<div class="campo"><span class="icono">💰</span>' +
@@ -623,9 +819,7 @@
               '<h2>Traspaso de caja</h2>' +
             '</div>';
 
-    if(estado.error){
-      h += '<div class="aviso error surge">' + esc(estado.error) + '</div>';
-    }
+    if(estado.error) h += '<div class="aviso error surge">' + esc(estado.error) + '</div>';
 
     h += '<div class="tarjeta surge" style="padding:20px;margin-bottom:16px">' +
            '<div style="display:flex;flex-direction:column;gap:12px">' +
@@ -652,14 +846,18 @@
 
   function pintar(){
     var app = document.getElementById('app');
-    var v = estado.vista;
+    var v   = estado.vista;
+    var y   = window.scrollY;
 
-    if(v === 'fondo' && estado.movimientos.length === 0)      app.innerHTML = vFondo();
-    else if(v === 'movimiento')                                app.innerHTML = vMovimiento();
-    else if(v === 'traspaso')                                  app.innerHTML = vTraspaso();
-    else                                                        app.innerHTML = vPrincipal();
+    if(v === 'fondo' && actuales().length === 0) app.innerHTML = vFondo();
+    else if(v === 'movimiento')                  app.innerHTML = vMovimiento();
+    else if(v === 'traspaso')                    app.innerHTML = vTraspaso();
+    else                                         app.innerHTML = vPrincipal();
 
-    window.scrollTo(0, 0);
+    /* Un refresco de fondo no debe dar un salto a quien está leyendo. */
+    if(v === estado.vistaPintada) window.scrollTo(0, y);
+    else window.scrollTo(0, 0);
+    estado.vistaPintada = v;
   }
 
   function ir(vista){
@@ -680,15 +878,15 @@
   /* ============ acciones ============ */
 
   function abrirCaja(){
+    capturar();
     anadir({
       tipo: 'ingreso',
       cantidad: TOTAL_FONDO,
       concepto: 'Apertura de caja',
-      persona: PERSONAS[0],
-      denom: null
+      persona: estado.persona,
+      denom: null,
+      hacia: estado.persona
     });
-    estado.portador = PERSONAS[0];
-    guardar();
     estado.vista = 'principal';
     pintar();
   }
@@ -701,7 +899,6 @@
       estado.error = 'Escribe una cantidad mayor que cero.';
       return pintar();
     }
-
     if(estado.tipo === 'retirada' && c > saldo() + 1e-9){
       estado.error = 'No puedes retirar ' + eur(c) + ': en caja solo hay ' + eur(saldo()) + '.';
       return pintar();
@@ -713,7 +910,8 @@
       cantidad: c,
       concepto: (estado.concepto.trim() || estado.tipo) + sufijo,
       persona: estado.persona,
-      denom: estado.denom ? estado.denom.l : null
+      denom: estado.denom ? estado.denom.l : null,
+      hacia: null
     });
 
     limpiarForm();
@@ -738,41 +936,51 @@
       tipo: 'traspaso',
       cantidad: c,
       concepto: estado.de + ' → ' + estado.a,
-      persona: estado.de + ' → ' + estado.a,
-      denom: null
+      persona: estado.de,
+      denom: null,
+      hacia: estado.a
     });
 
-    estado.portador = estado.a;
-    guardar();
     limpiarForm();
     estado.vista = 'principal';
     pintar();
   }
 
-  function reiniciar(){
-    if(!confirm('¿Cerrar la caja y borrar los ' + estado.movimientos.length +
-                ' movimientos registrados?\n\nEsta acción no se puede deshacer.')) return;
-    estado.movimientos = [];
-    estado.portador = '';
+  /* El cierre no borra nada: deja una marca en la hoja y la caja vuelve a
+     empezar de cero. El histórico completo se queda en la hoja. */
+  function cerrar(){
+    var s = saldo();
+    if(!confirm('¿Cerrar la caja con ' + eur(s) + '?\n\n' +
+                'Queda anotado en la hoja y el contador vuelve a cero. ' +
+                'No se borra nada de lo apuntado.')) return;
+
+    anadir({
+      tipo: 'cierre',
+      cantidad: s,
+      concepto: 'Cierre de caja · ' + eur(s),
+      persona: portador() || PERSONAS[0],
+      denom: null,
+      hacia: null
+    });
+
     limpiarForm();
-    guardar();
     estado.vista = 'principal';
     pintar();
   }
 
   /* ============ eventos ============ */
 
-  document.getElementById('app').addEventListener('click', function(ev){
+  var app = document.getElementById('app');
+
+  app.addEventListener('click', function(ev){
     var el = ev.target.closest('[data-ir],[data-accion],[data-tipo],[data-denom]');
     if(!el) return;
 
-    if(el.dataset.ir){
-      return ir(el.dataset.ir);
-    }
+    if(el.dataset.ir) return ir(el.dataset.ir);
 
     if(el.dataset.tipo){
       capturar();
-      estado.tipo = el.dataset.tipo;
+      estado.tipo  = el.dataset.tipo;
       estado.error = '';
       return pintar();
     }
@@ -790,21 +998,42 @@
       case 'abrir-caja':    return abrirCaja();
       case 'guardar-mov':   return guardarMov();
       case 'guardar-trasp': return guardarTrasp();
-      case 'reiniciar':     return reiniciar();
+      case 'cerrar':        return cerrar();
+      case 'sincronizar':   return sincronizar();
     }
   });
 
-  /* Enter en un campo = enviar el formulario de esa vista */
-  document.getElementById('app').addEventListener('keydown', function(ev){
+  app.addEventListener('keydown', function(ev){
     if(ev.key !== 'Enter') return;
     if(estado.vista === 'movimiento'){ ev.preventDefault(); guardarMov(); }
     if(estado.vista === 'traspaso'){   ev.preventDefault(); guardarTrasp(); }
   });
 
+  /* Refresco: periódico, al volver a la pestaña y al recuperar la señal.
+     Nunca mientras se está rellenando un formulario, para no repintar
+     debajo de los dedos de quien escribe. */
+  function refrescoDeFondo(){
+    if(estado.vista !== 'principal') return;
+    if(document.hidden) return;
+    sincronizar();
+  }
+
+  setInterval(refrescoDeFondo, REFRESCO);
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden) refrescoDeFondo();
+  });
+  window.addEventListener('online', function(){ sincronizar(); });
+
+  /* Mantiene fresco el "hace X min" aunque no haya nada que descargar. */
+  setInterval(function(){
+    if(estado.vista === 'principal' && !document.hidden && estado.sync === 'ok') pintar();
+  }, 30000);
+
   /* ============ arranque ============ */
 
   cargar();
   pintar();
+  sincronizar();
 })();
 </script>
 </body>

@@ -1,13 +1,22 @@
-# Fiestas de Calanda — confirmación de asistencia
+# Fiestas de Calanda
 
-Página independiente (`index.html`) con un formulario de tres campos
-—nombre (opcional), si asistes y si te quedas a cenar— que guarda cada
-respuesta como una fila nueva en una hoja de cálculo de Google. Al estar en
-Google Sheets, cualquiera que tenga la hoja abierta ve las respuestas
-aparecer en tiempo real, sin recargar nada.
+Dos páginas independientes, sin build ni dependencias, publicadas con
+GitHub Pages:
 
-No hace falta backend propio: el envío va directo del navegador a un
-"Apps Script" ligado a la hoja.
+| Página | Para qué |
+|---|---|
+| `index.html` | Web pública de La Sobremesa, con el formulario del sorteo. |
+| `sorteo.html` | Página suelta para apuntarse al sorteo. |
+| `caja.html` | Tracker de caja de uso interno durante las fiestas. |
+
+Las dos guardan sus datos en la **misma hoja de cálculo de Google**, en
+pestañas distintas ("Respuestas" y "Caja"), mediante un único Apps Script.
+No hace falta backend propio: el navegador habla directamente con el
+script ligado a la hoja.
+
+El formulario del sorteo pide tres campos —nombre (opcional), si asistes y
+si te quedas a cenar— y añade una fila por respuesta. Cualquiera que tenga
+la hoja abierta las ve aparecer en tiempo real, sin recargar nada.
 
 ## Publicar la página (GitHub Pages)
 
@@ -65,6 +74,70 @@ Ve a [sheets.google.com](https://sheets.google.com) y crea una hoja nueva
   "Respuestas" con fecha, nombre, si asiste y si se queda a cenar.
 - Comparte la hoja con quien organice la fiesta (permiso de "Lector" o
   "Comentador" es suficiente) para que vea las respuestas en directo.
+
+## Tracker de caja (`caja.html`)
+
+Página de uso interno para llevar la caja durante las fiestas: fondo
+inicial, ingresos y retiradas con denominación, traspasos entre personas y
+registro de todo lo apuntado.
+
+**Sin conectar a la hoja funciona igual, pero cada móvil lleva su propia
+caja por separado.** Para que todos veáis la misma caja —y para que quede
+registro— hay que conectarla, siguiendo estos pasos.
+
+### 1. Actualizar el script
+
+`google-apps-script/Code.gs` ya trae el código que atiende a las dos
+páginas. Si el script del sorteo ya estaba desplegado, pega el contenido
+actualizado del archivo encima del que tenías y guarda.
+
+### 2. Volver a implementar
+
+El código nuevo **no llega solo** a la URL que ya tenías: hay que publicar
+una versión.
+
+1. En el editor de Apps Script: **Implementar → Gestionar implementaciones**.
+2. En la implementación existente, pulsa el lápiz (**Editar**).
+3. En "Versión" elige **Nueva versión** y pulsa **Implementar**.
+4. Comprueba que sigue en **Quién tiene acceso: cualquier usuario**. Sin
+   eso, la página no puede leer los movimientos.
+
+La URL `/exec` no cambia. Si aún no tenías script, sigue los pasos de la
+sección anterior para crear la implementación desde cero.
+
+### 3. Pegar la URL en la página
+
+1. Abre `caja.html`.
+2. Arriba del `<script>`, busca:
+   ```js
+   var API = '';
+   ```
+3. Pon ahí la URL de la aplicación web (la que termina en `/exec`).
+4. Guarda y sube el cambio.
+
+### 4. Comprobar
+
+Abre `caja.html` en dos móviles. Bajo el saldo debe poner **"Al día"** con
+un punto verde. Apunta un movimiento en uno y en el otro pulsa esa misma
+línea para refrescar: debería aparecer. En la hoja tendrás una pestaña
+"Caja" con una fila por movimiento.
+
+### Cómo se comporta
+
+- **Se refresca sola** cada 25 segundos mientras la tienes abierta, y al
+  volver a la pestaña. También puedes tocar la línea de estado para forzarlo.
+- **Funciona sin cobertura.** Lo que apuntes se guarda en el móvil, se marca
+  como "sin guardar" y se envía en cuanto vuelve la señal. Los envíos llevan
+  un identificador propio y el script no los duplica, así que reintentar es
+  seguro.
+- **Nunca se borra nada.** "Cerrar caja" no elimina movimientos: anota una
+  fila de cierre y el contador vuelve a cero. Todo el histórico se queda en
+  la hoja.
+- El saldo que ves es el de la caja abierta ahora, es decir, lo posterior al
+  último cierre.
+
+> Ojo: quien pueda abrir la hoja puede editarla a mano. Comparte con permiso
+> de **Lector** a quien solo tenga que consultarla.
 
 ## Notas
 
