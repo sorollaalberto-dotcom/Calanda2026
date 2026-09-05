@@ -1,18 +1,25 @@
 # Fiestas de Calanda
 
-Dos páginas independientes, sin build ni dependencias, publicadas con
-GitHub Pages:
+Páginas independientes, sin build ni dependencias, publicadas con GitHub
+Pages:
 
-| Página | Para qué |
-|---|---|
-| `index.html` | Web pública de La Sobremesa, con el formulario del sorteo. |
-| `sorteo.html` | Página suelta para apuntarse al sorteo. |
-| `caja.html` | Tracker de caja de uso interno durante las fiestas. |
+| Página | Para qué | Guarda en |
+|---|---|---|
+| `index.html` | Web pública de La Sobremesa, con el formulario del sorteo. | Hoja del sorteo |
+| `sorteo.html` | Página suelta para apuntarse al sorteo. | Hoja del sorteo |
+| `caja.html` | Tracker de caja de uso interno durante las fiestas. | Hoja de la caja |
 
-Las dos guardan sus datos en la **misma hoja de cálculo de Google**, en
-pestañas distintas ("Respuestas" y "Caja"), mediante un único Apps Script.
+**Cada una usa su propia hoja de cálculo y su propio Apps Script**, sin
+mezclarse: son cosas distintas, con gente distinta mirándolas, y así tocar
+una nunca puede romper la otra.
+
+| Script | Hoja | Página |
+|---|---|---|
+| `google-apps-script/Code.gs` | Hoja del sorteo, pestaña "Respuestas" | `index.html`, `sorteo.html` |
+| `google-apps-script/Caja.gs` | Hoja de la caja, pestaña "Caja" | `caja.html` |
+
 No hace falta backend propio: el navegador habla directamente con el
-script ligado a la hoja.
+script ligado a cada hoja.
 
 El formulario del sorteo pide tres campos —nombre (opcional), si asistes y
 si te quedas a cenar— y añade una fila por respuesta. Cualquiera que tenga
@@ -96,27 +103,40 @@ Si cambian las cantidades habituales, están en `caja.html` en
 caja por separado.** Para que todos veáis la misma caja —y para que quede
 registro— hay que conectarla, siguiendo estos pasos.
 
-### 1. Actualizar el script
+> El script del sorteo **no se toca en ningún momento**. La caja va por su
+> cuenta, con su hoja y su implementación.
 
-`google-apps-script/Code.gs` ya trae el código que atiende a las dos
-páginas. Si el script del sorteo ya estaba desplegado, pega el contenido
-actualizado del archivo encima del que tenías y guarda.
+### 1. Crear la hoja de la caja
 
-### 2. Volver a implementar
+En [sheets.google.com](https://sheets.google.com), crea una hoja de cálculo
+nueva —por ejemplo "Caja — Fiestas de Calanda"—. Vacía, sin pestañas ni
+cabeceras: el script crea la pestaña "Caja" con sus columnas la primera vez
+que reciba algo.
 
-El código nuevo **no llega solo** a la URL que ya tenías: hay que publicar
-una versión.
+### 2. Añadir el script
 
-1. En el editor de Apps Script: **Implementar → Gestionar implementaciones**.
-2. En la implementación existente, pulsa el lápiz (**Editar**).
-3. En "Versión" elige **Nueva versión** y pulsa **Implementar**.
-4. Comprueba que sigue en **Quién tiene acceso: cualquier usuario**. Sin
-   eso, la página no puede leer los movimientos.
+1. En esa hoja nueva: **Extensiones → Apps Script**.
+2. Borra lo que traiga `Código.gs` por defecto y pega entero
+   [`google-apps-script/Caja.gs`](./google-apps-script/Caja.gs).
+3. Pon el PIN (ver más abajo) y guarda con `Ctrl/Cmd+S`.
 
-La URL `/exec` no cambia. Si aún no tenías script, sigue los pasos de la
-sección anterior para crear la implementación desde cero.
+### 3. Publicarlo como aplicación web
 
-### 3. Pegar la URL en la página
+1. Arriba a la derecha: **Implementar → Nueva implementación**.
+2. En "Selecciona el tipo", elige **Aplicación web**.
+3. Configura:
+   - **Ejecutar como:** Yo
+   - **Quién tiene acceso:** **Cualquier usuario** ← sin esto la página no
+     puede leer los movimientos
+4. **Implementar**. La primera vez Google pide autorizar el script: es
+   tuyo, dale permiso.
+5. Copia la **URL de la aplicación web** (termina en `/exec`).
+
+Si más adelante cambias el código —por ejemplo el PIN—, hay que ir a
+**Implementar → Gestionar implementaciones → editar (lápiz) → Versión:
+Nueva versión**. Sin ese paso la URL sigue sirviendo el código antiguo.
+
+### 4. Pegar la URL en la página
 
 1. Abre `caja.html`.
 2. Arriba del `<script>`, busca:
@@ -126,31 +146,32 @@ sección anterior para crear la implementación desde cero.
 3. Pon ahí la URL de la aplicación web (la que termina en `/exec`).
 4. Guarda y sube el cambio.
 
-### 4. Poner un PIN (recomendado)
+### 5. Poner un PIN (recomendado)
 
 La página está publicada en internet: **GitHub Pages gratuito exige que el
 repositorio sea público**, así que cualquiera con el enlace puede abrirla y
 la URL del script va escrita en su código.
 
 Para que eso no signifique que cualquiera pueda leer vuestros movimientos o
-apuntar movimientos falsos, en la primera línea de `Code.gs` hay:
+apuntar movimientos falsos, cerca del principio de `Caja.gs` hay:
 
 ```js
 var PIN = '';
 ```
 
-Pon ahí el PIN que queráis (`var PIN = '2026';`), guarda y repite el paso 3
-para publicar la versión. Cada uno lo escribe una vez en su móvil y se le
+Pon ahí el PIN que queráis (`var PIN = '2026';`) y guarda. Si ya habías
+publicado la implementación, acuérdate de crear una **versión nueva** para
+que el cambio surta efecto. Cada uno lo escribe una vez en su móvil y se le
 queda guardado.
 
 Lo que hace seguro esto es que **el PIN solo existe dentro del script**:
 no viaja en el código de la página, así que abrirla no lo revela. Sin él,
 el script no devuelve ni un movimiento ni acepta ninguno.
 
-Déjalo vacío si prefieres la caja abierta. El formulario del sorteo nunca
-pide PIN, funcione como funcione la caja.
+Déjalo vacío si prefieres la caja abierta. El formulario del sorteo no se
+ve afectado en ningún caso: es otro script y otra hoja.
 
-### 5. Comprobar
+### 6. Comprobar
 
 Abre `caja.html` en dos móviles. Bajo el saldo debe poner **"Al día"** con
 un punto verde. Apunta un movimiento en uno y en el otro pulsa esa misma
