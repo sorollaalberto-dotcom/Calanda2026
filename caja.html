@@ -77,9 +77,11 @@
     pointer-events:none;
   }
   .cabecera .contenido{ position:relative; z-index:1; }
-  .cabecera .marca{
-    font-size:11px; color:var(--gris-2);
-    letter-spacing:4px; font-weight:500; margin-bottom:12px;
+  .cabecera .logo{
+    width:132px; height:auto;
+    display:block; margin:0 auto 16px;
+    /* si el PNG faltara, el alt se lee sobre el verde */
+    color:var(--crema); font-size:11px; letter-spacing:3px;
   }
   .cabecera h1{
     font-size:26px; font-weight:700;
@@ -272,19 +274,7 @@
     display:inline-block;
     min-width:200px;
   }
-  .marco-logo img{ width:160px; display:block; }
-  .marco-logo .tipografico{
-    font-family:Georgia,"Times New Roman",serif;
-    color:var(--crema);
-    font-size:20px; font-weight:700; letter-spacing:2px;
-    line-height:1.3;
-  }
-  .marco-logo .tipografico small{
-    display:block;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-    font-size:9px; letter-spacing:3px; font-weight:500;
-    color:var(--ambar); margin-top:6px;
-  }
+  .marco-logo img{ width:160px; height:auto; display:block; }
 
   /* ---------- movimientos ---------- */
 
@@ -334,6 +324,7 @@
 
   .pie{ text-align:center; margin-top:24px; padding-bottom:8px; }
   .pie .filete{ width:40px; height:2px; background:var(--borde); margin:0 auto 16px; border-radius:1px; }
+  .pie .esencia{ width:146px; height:auto; display:block; margin:0 auto 16px; opacity:.5; }
   .pie .nota{ font-size:9px; color:var(--gris-2); line-height:1.5; letter-spacing:.3px; }
   .pie .cerrar{
     background:none; border:none;
@@ -488,7 +479,7 @@
       '<div class="cabecera surge">' +
         '<img class="textura" src="plaza-calanda.png" alt="" onerror="this.remove()">' +
         '<div class="contenido">' +
-          '<div class="marca">LA SOBREMESA</div>' +
+          '<img class="logo" src="logo-sobremesa.png" alt="LA SOBREMESA">' +
           '<h1>Tracker de Caja</h1>' +
           '<div class="filete"></div>' +
         '</div>' +
@@ -496,15 +487,7 @@
   }
 
   function vLogo(){
-    /* Si subes logo-sobremesa.png a la raíz del repo se usa ese;
-       si no existe, cae al logo tipográfico. */
-    return '' +
-      '<div class="marco-logo">' +
-        '<img src="logo-sobremesa.png" alt="La Sobremesa" ' +
-             'onerror="this.insertAdjacentHTML(\'afterend\', ' +
-             '\'&lt;div class=&quot;tipografico&quot;&gt;La Sobremesa&lt;small&gt;CALANDA 2026&lt;/small&gt;&lt;/div&gt;\'); ' +
-             'this.remove();">' +
-      '</div>';
+    return '<div class="marco-logo"><img src="logo-sobremesa.png" alt="La Sobremesa"></div>';
   }
 
   function vPrincipal(){
@@ -554,6 +537,7 @@
 
     h += '<div class="pie">' +
            '<div class="filete"></div>' +
+           '<img class="esencia" src="logo-esencia.png" alt="Recuperemos la esencia">' +
            '<div class="nota">Los datos se guardan en este navegador · No sustituye al arqueo físico</div>' +
            (n > 0 ? '<button class="cerrar" data-accion="reiniciar">Cerrar caja y vaciar el registro</button>' : '') +
          '</div>';
