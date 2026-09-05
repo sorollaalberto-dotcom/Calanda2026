@@ -383,6 +383,14 @@
   .sync.mal{ color:var(--rojo); border-color:#F0C9C6; background:#FCEDEC; }
   .sync.mal .punto{ background:var(--rojo); }
 
+  .motivo{
+    margin:-8px 0 16px;
+    padding:0 6px;
+    font-size:11px; line-height:1.4;
+    color:var(--rojo); opacity:.75;
+    text-align:center; word-break:break-word;
+  }
+
   .mov .sin-guardar{
     display:inline-block; margin-left:8px;
     padding:1px 7px; border-radius:8px;
@@ -692,6 +700,9 @@
           if(estado.vista === 'principal') estado.vista = 'pin';
         }else{
           estado.sync = 'fallo';
+          /* Guardamos el motivo: sin consola en el móvil, es la única forma
+             de distinguir un permiso mal puesto de una caída de red. */
+          estado.detalle = (err && err.message) ? String(err.message) : 'desconocido';
         }
       })
       .then(function(){
@@ -792,6 +803,10 @@
     h += '<button class="sync ' + claseSync() + '" data-accion="sincronizar">' +
            '<span class="punto"></span>' + esc(textoSync()) +
          '</button>';
+
+    if(estado.sync === 'fallo' && estado.detalle){
+      h += '<div class="motivo">Motivo: ' + esc(estado.detalle) + '</div>';
+    }
 
     if(n === 0){
       h += '<div class="acciones">' +
