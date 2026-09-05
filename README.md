@@ -126,7 +126,31 @@ sección anterior para crear la implementación desde cero.
 3. Pon ahí la URL de la aplicación web (la que termina en `/exec`).
 4. Guarda y sube el cambio.
 
-### 4. Comprobar
+### 4. Poner un PIN (recomendado)
+
+La página está publicada en internet: **GitHub Pages gratuito exige que el
+repositorio sea público**, así que cualquiera con el enlace puede abrirla y
+la URL del script va escrita en su código.
+
+Para que eso no signifique que cualquiera pueda leer vuestros movimientos o
+apuntar movimientos falsos, en la primera línea de `Code.gs` hay:
+
+```js
+var PIN = '';
+```
+
+Pon ahí el PIN que queráis (`var PIN = '2026';`), guarda y repite el paso 3
+para publicar la versión. Cada uno lo escribe una vez en su móvil y se le
+queda guardado.
+
+Lo que hace seguro esto es que **el PIN solo existe dentro del script**:
+no viaja en el código de la página, así que abrirla no lo revela. Sin él,
+el script no devuelve ni un movimiento ni acepta ninguno.
+
+Déjalo vacío si prefieres la caja abierta. El formulario del sorteo nunca
+pide PIN, funcione como funcione la caja.
+
+### 5. Comprobar
 
 Abre `caja.html` en dos móviles. Bajo el saldo debe poner **"Al día"** con
 un punto verde. Apunta un movimiento en uno y en el otro pulsa esa misma

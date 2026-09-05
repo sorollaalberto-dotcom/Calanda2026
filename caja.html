@@ -456,8 +456,10 @@
   var estado = {
     movimientos: [],   // todo lo conocido, ordenado por hora
     pendientes: [],    // movimientos aún no confirmados por la hoja
-    sync: API ? 'inicial' : 'local',   // local | inicial | ok | fallo | enviando
+    sync: API ? 'inicial' : 'local',   // local | inicial | ok | fallo | enviando | pin
     ultima: null,      // cuándo se sincronizó por última vez
+    pin: '',           // solo en este móvil; el script es quien lo valida
+    pinMal: false,
     vista: 'principal',
     tipo: 'ingreso',
     denom: null,
@@ -480,7 +482,8 @@
     try{
       localStorage.setItem(CLAVE, JSON.stringify({
         movimientos: estado.movimientos,
-        pendientes: estado.pendientes
+        pendientes: estado.pendientes,
+        pin: estado.pin
       }));
     }catch(e){ /* modo privado o almacenamiento lleno: seguimos en memoria */ }
   }
@@ -492,6 +495,7 @@
       var d = JSON.parse(crudo);
       if(d && Array.isArray(d.movimientos)) estado.movimientos = d.movimientos;
       if(d && Array.isArray(d.pendientes))  estado.pendientes  = d.pendientes;
+      if(d && typeof d.pin === 'string')    estado.pin         = d.pin;
     }catch(e){ /* dato ilegible: arrancamos limpio */ }
   }
 
@@ -596,9 +600,22 @@
   /* Enviamos con URLSearchParams a propósito: así la petición es "simple"
      y el navegador no lanza un preflight, que Apps Script no sabe atender. */
 
+  /* Cuando el script contesta pin:true es que hace falta el PIN o el
+     guardado es incorrecto. Lo marcamos para pedirlo, en vez de tratarlo
+     como un fallo de red. */
+  function ErrorPin(){ this.pin = true; }
+  ErrorPin.prototype = Object.create(Error.prototype);
+
+  function comprobar(d){
+    if(d && d.pin) throw new ErrorPin();
+    if(!d || !d.ok) throw new Error((d && d.error) || 'respuesta inesperada');
+    return d;
+  }
+
   function enviar(mov){
     var cuerpo = new URLSearchParams({
       origen:   'caja',
+      pin:      estado.pin || '',
       id:       mov.id,
       fecha:    mov.hora,
       tipo:     mov.tipo,
@@ -611,17 +628,20 @@
 
     return fetch(API, { method:'POST', body: cuerpo })
       .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(!d || !d.ok) throw new Error((d && d.error) || 'respuesta inesperada');
-        return true;
-      });
+      .then(comprobar)
+      .then(function(){ return true; });
   }
 
   function descargar(){
-    return fetch(API + (API.indexOf('?') < 0 ? '?' : '&') + 'origen=caja&t=' + Date.now())
+    var url = API + (API.indexOf('?') < 0 ? '?' : '&') +
+              'origen=caja&t=' + Date.now() +
+              '&pin=' + encodeURIComponent(estado.pin || '');
+
+    return fetch(url)
       .then(function(r){ return r.json(); })
+      .then(comprobar)
       .then(function(d){
-        if(!d || !d.ok || !Array.isArray(d.movimientos)) throw new Error('respuesta inesperada');
+        if(!Array.isArray(d.movimientos)) throw new Error('respuesta inesperada');
         return d.movimientos;
       });
   }
@@ -663,8 +683,16 @@
         estado.ultima = new Date();
         guardar();
       })
-      .catch(function(){
-        estado.sync = 'fallo';
+      .catch(function(err){
+        if(err && err.pin){
+          /* El PIN guardado ya no sirve: que lo vuelvan a escribir. Pero no
+             sacamos a nadie de un formulario a medio rellenar. */
+          estado.sync   = 'pin';
+          estado.pinMal = !!estado.pin;
+          if(estado.vista === 'principal') estado.vista = 'pin';
+        }else{
+          estado.sync = 'fallo';
+        }
       })
       .then(function(){
         sincronizando = false;
@@ -674,6 +702,7 @@
 
   function textoSync(){
     if(estado.sync === 'local')    return 'Solo en este móvil · sin hoja conectada';
+    if(estado.sync === 'pin')      return 'Hace falta el PIN · toca aquí';
     if(estado.sync === 'inicial')  return 'Cargando la caja…';
     if(estado.sync === 'enviando') return 'Sincronizando…';
 
@@ -694,7 +723,7 @@
   }
 
   function claseSync(){
-    if(estado.sync === 'fallo') return 'mal';
+    if(estado.sync === 'fallo' || estado.sync === 'pin') return 'mal';
     if(estado.sync === 'ok' && !estado.pendientes.length) return 'bien';
     return '';
   }
@@ -807,6 +836,25 @@
          '</div>';
 
     return h;
+  }
+
+  function vPin(){
+    return vCabecera() +
+      '<div class="tarjeta surge"><div style="padding:26px 22px;text-align:center">' +
+        '<div style="font-size:34px;margin-bottom:10px">🔒</div>' +
+        '<div style="font-size:18px;font-weight:700;margin-bottom:6px">Caja protegida</div>' +
+        '<div class="ayuda" style="margin-bottom:18px">' +
+          (estado.pinMal
+            ? 'Ese PIN no es correcto. Pregunta al grupo cuál es.'
+            : 'Escribe el PIN del grupo. Solo hace falta la primera vez en este móvil.') +
+        '</div>' +
+        '<div class="campo"><span class="icono">🔑</span>' +
+          '<input id="f-pin" type="password" inputmode="numeric" autocomplete="off" ' +
+                 'placeholder="PIN" value=""></div>' +
+        '<div style="margin-top:14px">' +
+          '<button class="btn grande" data-accion="guardar-pin">Entrar</button>' +
+        '</div>' +
+      '</div></div>';
   }
 
   function vFondo(){
@@ -947,7 +995,8 @@
     var v   = estado.vista;
     var y   = window.scrollY;
 
-    if(v === 'fondo' && actuales().length === 0) app.innerHTML = vFondo();
+    if(v === 'pin')                              app.innerHTML = vPin();
+    else if(v === 'fondo' && actuales().length === 0) app.innerHTML = vFondo();
     else if(v === 'movimiento')                  app.innerHTML = vMovimiento();
     else if(v === 'traspaso')                    app.innerHTML = vTraspaso();
     else                                         app.innerHTML = vPrincipal();
@@ -1112,7 +1161,21 @@
       case 'guardar-mov':   return guardarMov();
       case 'guardar-trasp': return guardarTrasp();
       case 'cerrar':        return cerrar();
-      case 'sincronizar':   return sincronizar();
+      case 'sincronizar':
+        if(estado.sync === 'pin'){ estado.vista = 'pin'; return pintar(); }
+        return sincronizar();
+      case 'guardar-pin': {
+        var campo = document.getElementById('f-pin');
+        var val = campo ? campo.value.trim() : '';
+        if(!val) return;
+        estado.pin    = val;
+        estado.pinMal = false;
+        estado.vista  = 'principal';
+        estado.sync   = 'inicial';
+        guardar();
+        pintar();
+        return sincronizar();
+      }
     }
   });
 
@@ -1134,6 +1197,12 @@
 
   app.addEventListener('keydown', function(ev){
     if(ev.key !== 'Enter') return;
+    if(estado.vista === 'pin'){
+      ev.preventDefault();
+      var b = document.querySelector('[data-accion="guardar-pin"]');
+      if(b) b.click();
+      return;
+    }
     if(estado.vista === 'movimiento'){ ev.preventDefault(); guardarMov(); }
     if(estado.vista === 'traspaso'){   ev.preventDefault(); guardarTrasp(); }
   });

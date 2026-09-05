@@ -9,6 +9,24 @@
  * decide a dónde va cada cosa.
  */
 
+/* ------------------------------------------------------------------
+   PIN de la caja
+
+   La página está publicada en internet y cualquiera con el enlace puede
+   abrirla. Con un PIN puesto aquí, quien no lo sepa no puede ver los
+   movimientos ni apuntar nada: el PIN vive solo en este script, nunca
+   viaja dentro del código de la página.
+
+   Pon el que queráis (por ejemplo '2026') y dilo al grupo. Cada uno lo
+   escribe una vez en su móvil y se le queda guardado.
+
+   Déjalo vacío ('') para que la caja quede abierta sin PIN.
+
+   El formulario del sorteo no se ve afectado: nunca pide PIN.
+   ------------------------------------------------------------------ */
+
+var PIN = '';
+
 var HOJA_RESPUESTAS = 'Respuestas';
 var HOJA_CAJA       = 'Caja';
 
@@ -23,18 +41,30 @@ function doPost(e) {
   var datos = (e && e.parameter) || {};
 
   if (datos.origen === 'caja') {
+    if (!pinCorrecto(datos)) return pinMal();
     return guardarMovimiento(datos);
   }
-  return guardarRespuesta(datos);
+  return guardarRespuesta(datos);   // el sorteo nunca pide PIN
 }
 
 function doGet(e) {
   var datos = (e && e.parameter) || {};
 
   if (datos.origen === 'caja') {
+    if (!pinCorrecto(datos)) return pinMal();
     return json({ ok: true, movimientos: leerMovimientos() });
   }
   return json({ ok: false, error: 'Falta el parámetro origen.' });
+}
+
+function pinCorrecto(datos) {
+  if (!PIN) return true;                                  // sin PIN configurado
+  return String(datos.pin || '') === String(PIN);
+}
+
+/** La página distingue este caso por "pin": pide el PIN en vez de dar error. */
+function pinMal() {
+  return json({ ok: false, pin: true, error: 'PIN incorrecto.' });
 }
 
 
