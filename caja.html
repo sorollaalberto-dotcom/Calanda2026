@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Tracker de Caja — La Sobremesa</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💶</text></svg>">
+<style>
+  :root{
+    --verde:#173425;
+    --verde-2:#1F4430;
+    --verde-3:#2A5039;
+    --crema:#F0DDB8;
+    --ambar:#C9954B;
+    --ambar-2:#D4A85C;
+    --gris:#7A8478;
+    --gris-2:#A8AFA9;
+    --gris-3:#C8CCC9;
+    --fondo:#F5F2EC;
+    --tarjeta:#FFFFFF;
+    --borde:#E8E2D6;
+    --rojo:#B8423A;
+    --verde-ok:#2E7D32;
+    --s-sm:0 1px 3px rgba(23,52,37,.06), 0 1px 2px rgba(23,52,37,.04);
+    --s-md:0 4px 12px rgba(23,52,37,.08), 0 2px 4px rgba(23,52,37,.04);
+    --s-lg:0 8px 24px rgba(23,52,37,.10), 0 4px 8px rgba(23,52,37,.05);
+    --s-in:inset 0 2px 4px rgba(23,52,37,.05);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+  body{
+    background:var(--fondo);
+    color:var(--verde);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .envoltorio{
+    max-width:440px;
+    margin:0 auto;
+    padding:12px 16px 32px;
+  }
+
+  @keyframes surge{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+  @keyframes entra{ from{ opacity:0; transform:translateX(20px); } to{ opacity:1; transform:none; } }
+  @keyframes latido{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.02); } }
+
+  .surge{ animation:surge .4s ease both; }
+  .entra{ animation:entra .3s ease both; }
+  .latido{ animation:latido 2s ease infinite; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  /* ---------- cabecera ---------- */
+
+  .cabecera{
+    position:relative;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:20px;
+    box-shadow:var(--s-lg);
+    background:linear-gradient(135deg, var(--verde) 0%, var(--verde-2) 50%, var(--verde-3) 100%);
+    padding:28px 24px 24px;
+    text-align:center;
+  }
+  .cabecera .textura{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    opacity:.06;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+  }
+  .cabecera .contenido{ position:relative; z-index:1; }
+  .cabecera .marca{
+    font-size:11px; color:var(--gris-2);
+    letter-spacing:4px; font-weight:500; margin-bottom:12px;
+  }
+  .cabecera h1{
+    font-size:26px; font-weight:700;
+    font-family:Georgia,"Times New Roman",serif;
+    color:var(--crema); letter-spacing:1px;
+  }
+  .cabecera .filete{
+    width:40px; height:2px; background:var(--ambar);
+    margin:12px auto 0; border-radius:1px;
+  }
+
+  /* ---------- tarjetas ---------- */
+
+  .tarjeta{
+    background:var(--tarjeta);
+    border-radius:16px;
+    box-shadow:var(--s-md);
+    overflow:hidden;
+  }
+
+  .rotulo{
+    font-size:11px; color:var(--gris);
+    font-weight:700; letter-spacing:2.5px;
+  }
+
+  /* ---------- saldo ---------- */
+
+  .saldo{
+    margin-bottom:16px;
+    background:linear-gradient(145deg, var(--verde) 0%, var(--verde-2) 60%, var(--verde-3) 100%);
+    padding:28px 24px;
+    text-align:center;
+    position:relative;
+  }
+  .saldo .piloto{
+    position:absolute; top:16px; right:20px;
+    width:6px; height:6px; border-radius:3px;
+    background:var(--gris);
+  }
+  .saldo .piloto.activo{ background:#4CAF50; box-shadow:0 0 8px #4CAF50; }
+  .saldo .rotulo{ color:var(--gris-2); letter-spacing:3px; font-size:10px; font-weight:600; margin-bottom:10px; }
+  .saldo .cifra{
+    font-size:42px; font-weight:800; color:var(--crema);
+    letter-spacing:.5px; font-variant-numeric:tabular-nums;
+  }
+  .saldo .portador{
+    margin-top:12px;
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(201,149,75,.15);
+    padding:6px 14px; border-radius:20px;
+    font-size:12px; color:var(--ambar); font-weight:600;
+  }
+  .saldo .cuenta{ font-size:11px; color:var(--gris); margin-top:10px; }
+
+  /* ---------- botones ---------- */
+
+  .btn{
+    border:none; border-radius:12px;
+    padding:13px 20px;
+    font-size:14px; font-weight:600;
+    font-family:inherit; letter-spacing:.3px;
+    cursor:pointer; width:100%;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+    background:var(--verde); color:var(--crema);
+    box-shadow:var(--s-sm);
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn.grande{ padding:16px 24px; font-size:16px; }
+  .btn.ambar{ background:linear-gradient(135deg,var(--ambar),var(--ambar-2)); color:var(--verde); }
+  .btn.rojo{ background:var(--rojo); color:#fff; }
+  .btn.plano{ background:transparent; color:var(--gris); box-shadow:none; }
+  .btn.plano:active{ opacity:.6; }
+
+  .acciones{ display:grid; gap:10px; margin-bottom:20px; }
+  .acciones.dos{ grid-template-columns:1fr 1fr; }
+
+  /* ---------- formularios ---------- */
+
+  .campo{ position:relative; }
+  .campo .icono{
+    position:absolute; left:14px; top:50%;
+    transform:translateY(-50%);
+    font-size:16px; opacity:.4; pointer-events:none;
+  }
+  .campo input, .campo select{
+    width:100%;
+    padding:14px 14px 14px 42px;
+    border:1.5px solid var(--borde);
+    border-radius:12px;
+    font-size:16px;
+    font-family:inherit;
+    color:var(--verde);
+    background:var(--tarjeta);
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .campo input[type=number]{ -moz-appearance:textfield; }
+  .campo input[type=number]::-webkit-outer-spin-button,
+  .campo input[type=number]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .campo input:focus, .campo select:focus{
+    border-color:var(--verde);
+    box-shadow:0 0 0 3px rgba(23,52,37,.08);
+  }
+  .campo select{
+    appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237A8478' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+  }
+  .pila{ display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+
+  /* ---------- cabecera de vista ---------- */
+
+  .barra{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:24px;
+  }
+  .barra .volver{
+    background:none; border:none;
+    font-size:24px; cursor:pointer;
+    color:var(--gris); padding:4px;
+    line-height:1; font-family:inherit;
+  }
+  .barra h2{ font-size:20px; font-weight:700; }
+
+  /* ---------- selector tipo ---------- */
+
+  .segmentos{ display:flex; gap:8px; margin-bottom:20px; }
+  .segmentos button{
+    flex:1; padding:14px;
+    border:none; border-radius:12px;
+    font-size:15px; font-weight:700;
+    font-family:inherit; cursor:pointer;
+    background:var(--tarjeta); color:var(--gris);
+    box-shadow:var(--s-in);
+    transition:all .2s ease;
+  }
+  .segmentos button:active{ transform:scale(.97); }
+  .segmentos button.sel-ingreso{ background:var(--verde); color:var(--crema); box-shadow:var(--s-sm); }
+  .segmentos button.sel-retirada{ background:var(--rojo); color:#fff; box-shadow:var(--s-sm); }
+
+  /* ---------- denominaciones ---------- */
+
+  .denoms{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .denoms button{
+    padding:12px 6px;
+    border:2px solid var(--borde);
+    border-radius:12px;
+    background:var(--tarjeta);
+    color:var(--verde);
+    cursor:pointer; text-align:center;
+    font-family:inherit;
+    box-shadow:var(--s-in);
+    transition:all .15s ease;
+  }
+  .denoms button:active{ transform:scale(.95); }
+  .denoms button.sel{
+    border-color:var(--ambar);
+    background:linear-gradient(135deg,var(--ambar),var(--ambar-2));
+    color:#fff;
+    box-shadow:0 4px 12px rgba(201,149,75,.3);
+  }
+  .denoms .cara{ font-size:20px; margin-bottom:2px; }
+  .denoms .valor{ font-size:14px; font-weight:700; }
+
+  /* ---------- fondo inicial ---------- */
+
+  .fondo-linea{
+    display:flex; justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid var(--borde);
+    font-size:14px;
+  }
+  .fondo-linea:last-of-type{ border-bottom:none; }
+  .fondo-linea span:first-child{ color:var(--gris); }
+  .fondo-linea span:last-child{ font-weight:700; font-variant-numeric:tabular-nums; }
+  .fondo-total{
+    display:flex; justify-content:space-between;
+    padding:16px 0 0; margin-top:12px;
+    font-size:18px; font-weight:800;
+    border-top:2px solid var(--verde);
+  }
+  .fondo-total span:last-child{ color:var(--verde); font-variant-numeric:tabular-nums; }
+
+  .marco-logo{
+    background:var(--verde);
+    border-radius:12px;
+    padding:20px;
+    display:inline-block;
+    min-width:200px;
+  }
+  .marco-logo img{ width:160px; display:block; }
+  .marco-logo .tipografico{
+    font-family:Georgia,"Times New Roman",serif;
+    color:var(--crema);
+    font-size:20px; font-weight:700; letter-spacing:2px;
+    line-height:1.3;
+  }
+  .marco-logo .tipografico small{
+    display:block;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-size:9px; letter-spacing:3px; font-weight:500;
+    color:var(--ambar); margin-top:6px;
+  }
+
+  /* ---------- movimientos ---------- */
+
+  .lista{ max-height:360px; overflow-y:auto; }
+  .lista::-webkit-scrollbar{ width:4px; }
+  .lista::-webkit-scrollbar-thumb{ background:var(--gris-3); border-radius:4px; }
+
+  .mov{
+    padding:12px 18px;
+    border-bottom:1px solid var(--borde);
+    display:flex; justify-content:space-between; align-items:center;
+    transition:background .2s;
+  }
+  .mov:last-child{ border-bottom:none; }
+  .mov:hover{ background:#F8F6F1; }
+  .mov .texto{ flex:1; min-width:0; }
+  .mov .concepto{
+    font-size:14px; font-weight:600;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .mov .meta{ font-size:11px; color:var(--gris); margin-top:2px; }
+  .mov .importe{
+    font-size:16px; font-weight:800; margin-left:12px;
+    white-space:nowrap; font-variant-numeric:tabular-nums;
+  }
+  .mov .importe.ingreso{ color:var(--verde-ok); }
+  .mov .importe.retirada{ color:var(--rojo); }
+  .mov .importe.traspaso{ color:var(--ambar); }
+
+  .cabecera-lista{
+    padding:12px 18px;
+    border-bottom:1px solid var(--borde);
+  }
+
+  /* ---------- avisos ---------- */
+
+  .aviso{
+    padding:12px 14px;
+    border-radius:12px;
+    font-size:13px;
+    margin-bottom:14px;
+    line-height:1.4;
+  }
+  .aviso.error{ background:#FCEDEC; color:var(--rojo); border:1px solid #F0C9C6; }
+
+  /* ---------- pie ---------- */
+
+  .pie{ text-align:center; margin-top:24px; padding-bottom:8px; }
+  .pie .filete{ width:40px; height:2px; background:var(--borde); margin:0 auto 16px; border-radius:1px; }
+  .pie .nota{ font-size:9px; color:var(--gris-2); line-height:1.5; letter-spacing:.3px; }
+  .pie .cerrar{
+    background:none; border:none;
+    color:var(--gris-2); font-size:11px;
+    font-family:inherit; cursor:pointer;
+    margin-top:14px; padding:6px 12px;
+    text-decoration:underline; text-underline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="envoltorio" id="app"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============ datos fijos ============ */
+
+  var FONDO = [
+    ['Monedas 1€',   500],
+    ['Monedas 50c',  200],
+    ['Billetes 5€',  200],
+    ['Billetes 10€', 200],
+    ['Billetes 20€', 400]
+  ];
+  var TOTAL_FONDO = FONDO.reduce(function(a, f){ return a + f[1]; }, 0);
+
+  var PERSONAS = ['Alberto','Ismael','Diego','Vega','Leyre','Erika'];
+
+  var DENOMS = [
+    { v:0.5, l:'50c', cara:'🪙' },
+    { v:1,   l:'1€',  cara:'🪙' },
+    { v:5,   l:'5€',  cara:'💵' },
+    { v:10,  l:'10€', cara:'💵' },
+    { v:20,  l:'20€', cara:'💵' },
+    { v:50,  l:'50€', cara:'💵' }
+  ];
+
+  var CLAVE = 'sobremesa-caja';
+
+  /* ============ estado ============ */
+
+  var estado = {
+    movimientos: [],
+    portador: '',
+    vista: 'principal',
+    tipo: 'ingreso',
+    denom: null,
+    cantidad: '',
+    concepto: '',
+    persona: PERSONAS[0],
+    de: PERSONAS[0],
+    a: PERSONAS[1],
+    cantTrasp: '',
+    error: ''
+  };
+
+  /* ============ persistencia ============ */
+
+  function guardar(){
+    try{
+      localStorage.setItem(CLAVE, JSON.stringify({
+        movimientos: estado.movimientos,
+        portador: estado.portador
+      }));
+    }catch(e){ /* modo privado o almacenamiento lleno: seguimos en memoria */ }
+  }
+
+  function cargar(){
+    try{
+      var crudo = localStorage.getItem(CLAVE);
+      if(!crudo) return;
+      var d = JSON.parse(crudo);
+      if(d && Array.isArray(d.movimientos)){
+        estado.movimientos = d.movimientos;
+        estado.portador = d.portador || '';
+      }
+    }catch(e){ /* dato ilegible: arrancamos limpio */ }
+  }
+
+  /* ============ utilidades ============ */
+
+  function eur(n){
+    return n.toLocaleString('es-ES', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' €';
+  }
+
+  function hora(iso){
+    var d = new Date(iso);
+    return d.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  }
+
+  function saldo(){
+    return estado.movimientos.reduce(function(s, m){
+      if(m.tipo === 'ingreso')  return s + m.cantidad;
+      if(m.tipo === 'retirada') return s - m.cantidad;
+      return s;
+    }, 0);
+  }
+
+  function esc(t){
+    return String(t).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function anadir(mov){
+    mov.id = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    mov.hora = new Date().toISOString();
+    estado.movimientos.push(mov);
+    guardar();
+  }
+
+  function opciones(lista, sel){
+    return lista.map(function(p){
+      return '<option value="' + esc(p) + '"' + (p === sel ? ' selected' : '') + '>' + esc(p) + '</option>';
+    }).join('');
+  }
+
+  /* ============ captura de formulario ============ */
+  /* Guardamos lo escrito antes de repintar para no perderlo al pulsar
+     una denominación o cambiar de tipo. */
+
+  function capturar(){
+    var c = document.getElementById('f-cantidad');
+    if(c) estado.cantidad = c.value;
+    var k = document.getElementById('f-concepto');
+    if(k) estado.concepto = k.value;
+    var p = document.getElementById('f-persona');
+    if(p) estado.persona = p.value;
+    var de = document.getElementById('f-de');
+    if(de) estado.de = de.value;
+    var a = document.getElementById('f-a');
+    if(a) estado.a = a.value;
+    var t = document.getElementById('f-trasp');
+    if(t) estado.cantTrasp = t.value;
+  }
+
+  function limpiarForm(){
+    estado.cantidad = '';
+    estado.concepto = '';
+    estado.denom = null;
+    estado.cantTrasp = '';
+    estado.error = '';
+  }
+
+  /* ============ vistas ============ */
+
+  function vCabecera(){
+    return '' +
+      '<div class="cabecera surge">' +
+        '<img class="textura" src="plaza-calanda.png" alt="" onerror="this.remove()">' +
+        '<div class="contenido">' +
+          '<div class="marca">LA SOBREMESA</div>' +
+          '<h1>Tracker de Caja</h1>' +
+          '<div class="filete"></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function vLogo(){
+    /* Si subes logo-sobremesa.png a la raíz del repo se usa ese;
+       si no existe, cae al logo tipográfico. */
+    return '' +
+      '<div class="marco-logo">' +
+        '<img src="logo-sobremesa.png" alt="La Sobremesa" ' +
+             'onerror="this.insertAdjacentHTML(\'afterend\', ' +
+             '\'&lt;div class=&quot;tipografico&quot;&gt;La Sobremesa&lt;small&gt;CALANDA 2026&lt;/small&gt;&lt;/div&gt;\'); ' +
+             'this.remove();">' +
+      '</div>';
+  }
+
+  function vPrincipal(){
+    var s = saldo();
+    var n = estado.movimientos.length;
+    var h = vCabecera();
+
+    h += '<div class="tarjeta saldo surge">' +
+           '<div class="piloto' + (s > 0 ? ' activo' : '') + '"></div>' +
+           '<div class="rotulo">SALDO EN CAJA</div>' +
+           '<div class="cifra' + (s > 0 ? ' latido' : '') + '">' + eur(s) + '</div>' +
+           (estado.portador
+             ? '<div class="portador"><span>👤</span><span>' + esc(estado.portador) + '</span></div>'
+             : '') +
+           '<div class="cuenta">' + n + ' movimiento' + (n !== 1 ? 's' : '') + '</div>' +
+         '</div>';
+
+    if(n === 0){
+      h += '<div class="acciones">' +
+             '<button class="btn grande" data-ir="fondo"><span>📋</span>Abrir caja con fondo inicial</button>' +
+           '</div>';
+    }else{
+      h += '<div class="acciones dos">' +
+             '<button class="btn" data-ir="movimiento"><span>＋</span>Movimiento</button>' +
+             '<button class="btn ambar" data-ir="traspaso"><span>🔄</span>Traspaso</button>' +
+           '</div>';
+    }
+
+    if(n > 0){
+      h += '<div class="tarjeta surge">' +
+             '<div class="cabecera-lista"><div class="rotulo">MOVIMIENTOS</div></div>' +
+             '<div class="lista">';
+
+      estado.movimientos.slice().reverse().forEach(function(m, i){
+        var signo = m.tipo === 'ingreso' ? '+' : (m.tipo === 'retirada' ? '−' : '⇄');
+        h += '<div class="mov entra" style="animation-delay:' + Math.min(i * 0.05, 0.4) + 's">' +
+               '<div class="texto">' +
+                 '<div class="concepto">' + esc(m.concepto) + '</div>' +
+                 '<div class="meta">' + hora(m.hora) + ' · ' + esc(m.persona) + '</div>' +
+               '</div>' +
+               '<div class="importe ' + m.tipo + '">' + signo + eur(m.cantidad) + '</div>' +
+             '</div>';
+      });
+
+      h += '</div></div>';
+    }
+
+    h += '<div class="pie">' +
+           '<div class="filete"></div>' +
+           '<div class="nota">Los datos se guardan en este navegador · No sustituye al arqueo físico</div>' +
+           (n > 0 ? '<button class="cerrar" data-accion="reiniciar">Cerrar caja y vaciar el registro</button>' : '') +
+         '</div>';
+
+    return h;
+  }
+
+  function vFondo(){
+    var h = vCabecera();
+
+    h += '<div class="tarjeta surge"><div style="padding:24px 20px">' +
+           '<div style="text-align:center;margin-bottom:20px">' + vLogo() + '</div>' +
+           '<div class="rotulo" style="margin-bottom:16px">FONDO DE CAJA INICIAL</div>';
+
+    FONDO.forEach(function(f){
+      h += '<div class="fondo-linea"><span>' + esc(f[0]) + '</span><span>' + eur(f[1]) + '</span></div>';
+    });
+
+    h += '<div class="fondo-total"><span>TOTAL</span><span>' + eur(TOTAL_FONDO) + '</span></div>' +
+         '</div></div>';
+
+    h += '<div style="margin-top:16px">' +
+           '<button class="btn grande" data-accion="abrir-caja"><span>📋</span>Registrar apertura</button>' +
+         '</div>' +
+         '<div style="text-align:center;margin-top:12px">' +
+           '<button class="btn plano" data-ir="principal">Volver</button>' +
+         '</div>';
+
+    return h;
+  }
+
+  function vMovimiento(){
+    var esIngreso = estado.tipo === 'ingreso';
+
+    var h = '<div class="barra surge">' +
+              '<button class="volver" data-ir="principal" aria-label="Volver">←</button>' +
+              '<h2>Nuevo movimiento</h2>' +
+            '</div>';
+
+    h += '<div class="segmentos surge">' +
+           '<button data-tipo="ingreso" class="' + (esIngreso ? 'sel-ingreso' : '') + '">+ Ingreso</button>' +
+           '<button data-tipo="retirada" class="' + (!esIngreso ? 'sel-retirada' : '') + '">− Retirada</button>' +
+         '</div>';
+
+    h += '<div class="tarjeta surge" style="padding:20px;margin-bottom:16px">' +
+           '<div class="rotulo" style="margin-bottom:14px">DENOMINACIÓN</div>' +
+           '<div class="denoms">';
+
+    DENOMS.forEach(function(d){
+      var sel = estado.denom && estado.denom.v === d.v;
+      h += '<button data-denom="' + d.v + '" class="' + (sel ? 'sel' : '') + '">' +
+             '<div class="cara">' + d.cara + '</div>' +
+             '<div class="valor">' + d.l + '</div>' +
+           '</button>';
+    });
+
+    h += '</div></div>';
+
+    if(estado.error){
+      h += '<div class="aviso error surge">' + esc(estado.error) + '</div>';
+    }
+
+    h += '<div class="pila surge">' +
+           '<div class="campo"><span class="icono">💰</span>' +
+             '<input id="f-cantidad" type="number" inputmode="decimal" step="0.01" min="0" ' +
+                    'placeholder="Cantidad (€)" value="' + esc(estado.cantidad) + '"></div>' +
+           '<div class="campo"><span class="icono">📝</span>' +
+             '<input id="f-concepto" type="text" placeholder="Concepto" value="' + esc(estado.concepto) + '"></div>' +
+           '<div class="campo"><span class="icono">👤</span>' +
+             '<select id="f-persona">' + opciones(PERSONAS, estado.persona) + '</select></div>' +
+         '</div>';
+
+    h += '<button class="btn grande ' + (esIngreso ? '' : 'rojo') + '" data-accion="guardar-mov">' +
+           '<span>✓</span>' + (esIngreso ? 'Registrar ingreso' : 'Registrar retirada') +
+         '</button>';
+
+    return h;
+  }
+
+  function vTraspaso(){
+    var h = '<div class="barra surge">' +
+              '<button class="volver" data-ir="principal" aria-label="Volver">←</button>' +
+              '<h2>Traspaso de caja</h2>' +
+            '</div>';
+
+    if(estado.error){
+      h += '<div class="aviso error surge">' + esc(estado.error) + '</div>';
+    }
+
+    h += '<div class="tarjeta surge" style="padding:20px;margin-bottom:16px">' +
+           '<div style="display:flex;flex-direction:column;gap:12px">' +
+             '<div class="rotulo">ENTREGA</div>' +
+             '<div class="campo"><span class="icono">👤</span>' +
+               '<select id="f-de">' + opciones(PERSONAS, estado.de) + '</select></div>' +
+             '<div style="text-align:center;font-size:24px;color:var(--gris-3)">↓</div>' +
+             '<div class="rotulo">RECIBE</div>' +
+             '<div class="campo"><span class="icono">👤</span>' +
+               '<select id="f-a">' + opciones(PERSONAS, estado.a) + '</select></div>' +
+             '<div style="height:8px"></div>' +
+             '<div class="campo"><span class="icono">💰</span>' +
+               '<input id="f-trasp" type="number" inputmode="decimal" step="0.01" min="0" ' +
+                      'placeholder="Importe en caja (€)" value="' + esc(estado.cantTrasp) + '"></div>' +
+           '</div>' +
+         '</div>';
+
+    h += '<button class="btn grande ambar" data-accion="guardar-trasp"><span>🔄</span>Registrar traspaso</button>';
+
+    return h;
+  }
+
+  /* ============ pintado ============ */
+
+  function pintar(){
+    var app = document.getElementById('app');
+    var v = estado.vista;
+
+    if(v === 'fondo' && estado.movimientos.length === 0)      app.innerHTML = vFondo();
+    else if(v === 'movimiento')                                app.innerHTML = vMovimiento();
+    else if(v === 'traspaso')                                  app.innerHTML = vTraspaso();
+    else                                                        app.innerHTML = vPrincipal();
+
+    window.scrollTo(0, 0);
+  }
+
+  function ir(vista){
+    capturar();
+    /* Cada entrada a un formulario empieza en limpio: si un envío falló y
+       el usuario salió, no debe reaparecer el importe anterior. Y el tipo
+       vuelve a "ingreso", que es lo habitual y lo menos dañino si alguien
+       se despista. */
+    if(vista !== estado.vista){
+      limpiarForm();
+      if(vista === 'movimiento') estado.tipo = 'ingreso';
+    }
+    estado.error = '';
+    estado.vista = vista;
+    pintar();
+  }
+
+  /* ============ acciones ============ */
+
+  function abrirCaja(){
+    anadir({
+      tipo: 'ingreso',
+      cantidad: TOTAL_FONDO,
+      concepto: 'Apertura de caja',
+      persona: PERSONAS[0],
+      denom: null
+    });
+    estado.portador = PERSONAS[0];
+    guardar();
+    estado.vista = 'principal';
+    pintar();
+  }
+
+  function guardarMov(){
+    capturar();
+    var c = parseFloat(String(estado.cantidad).replace(',', '.'));
+
+    if(!isFinite(c) || c <= 0){
+      estado.error = 'Escribe una cantidad mayor que cero.';
+      return pintar();
+    }
+
+    if(estado.tipo === 'retirada' && c > saldo() + 1e-9){
+      estado.error = 'No puedes retirar ' + eur(c) + ': en caja solo hay ' + eur(saldo()) + '.';
+      return pintar();
+    }
+
+    var sufijo = estado.denom ? ' · ' + estado.denom.l : '';
+    anadir({
+      tipo: estado.tipo,
+      cantidad: c,
+      concepto: (estado.concepto.trim() || estado.tipo) + sufijo,
+      persona: estado.persona,
+      denom: estado.denom ? estado.denom.l : null
+    });
+
+    limpiarForm();
+    estado.vista = 'principal';
+    pintar();
+  }
+
+  function guardarTrasp(){
+    capturar();
+    var c = parseFloat(String(estado.cantTrasp).replace(',', '.'));
+
+    if(!isFinite(c) || c <= 0){
+      estado.error = 'Escribe el importe que se entrega.';
+      return pintar();
+    }
+    if(estado.de === estado.a){
+      estado.error = 'Elige dos personas distintas.';
+      return pintar();
+    }
+
+    anadir({
+      tipo: 'traspaso',
+      cantidad: c,
+      concepto: estado.de + ' → ' + estado.a,
+      persona: estado.de + ' → ' + estado.a,
+      denom: null
+    });
+
+    estado.portador = estado.a;
+    guardar();
+    limpiarForm();
+    estado.vista = 'principal';
+    pintar();
+  }
+
+  function reiniciar(){
+    if(!confirm('¿Cerrar la caja y borrar los ' + estado.movimientos.length +
+                ' movimientos registrados?\n\nEsta acción no se puede deshacer.')) return;
+    estado.movimientos = [];
+    estado.portador = '';
+    limpiarForm();
+    guardar();
+    estado.vista = 'principal';
+    pintar();
+  }
+
+  /* ============ eventos ============ */
+
+  document.getElementById('app').addEventListener('click', function(ev){
+    var el = ev.target.closest('[data-ir],[data-accion],[data-tipo],[data-denom]');
+    if(!el) return;
+
+    if(el.dataset.ir){
+      return ir(el.dataset.ir);
+    }
+
+    if(el.dataset.tipo){
+      capturar();
+      estado.tipo = el.dataset.tipo;
+      estado.error = '';
+      return pintar();
+    }
+
+    if(el.dataset.denom){
+      capturar();
+      var v = parseFloat(el.dataset.denom);
+      estado.denom = (estado.denom && estado.denom.v === v)
+        ? null
+        : DENOMS.filter(function(d){ return d.v === v; })[0];
+      return pintar();
+    }
+
+    switch(el.dataset.accion){
+      case 'abrir-caja':    return abrirCaja();
+      case 'guardar-mov':   return guardarMov();
+      case 'guardar-trasp': return guardarTrasp();
+      case 'reiniciar':     return reiniciar();
+    }
+  });
+
+  /* Enter en un campo = enviar el formulario de esa vista */
+  document.getElementById('app').addEventListener('keydown', function(ev){
+    if(ev.key !== 'Enter') return;
+    if(estado.vista === 'movimiento'){ ev.preventDefault(); guardarMov(); }
+    if(estado.vista === 'traspaso'){   ev.preventDefault(); guardarTrasp(); }
+  });
+
+  /* ============ arranque ============ */
+
+  cargar();
+  pintar();
+})();
+</script>
+</body>
+</html>
