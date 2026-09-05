@@ -276,6 +276,30 @@
   }
   .marco-logo img{ width:160px; height:auto; display:block; }
 
+  .ayuda{
+    font-size:11.5px; color:var(--gris);
+    margin:8px 2px 0; line-height:1.4;
+  }
+
+  .desglose{
+    margin-top:16px;
+    border:1px solid var(--borde); border-radius:12px;
+    padding:0 14px;
+  }
+  .desglose summary{
+    cursor:pointer; list-style:none;
+    padding:12px 0; margin:0 -14px; padding-left:14px; padding-right:14px;
+    font-size:12.5px; font-weight:700; color:var(--gris);
+    letter-spacing:.3px;
+  }
+  .desglose summary::-webkit-details-marker{ display:none; }
+  .desglose summary::after{
+    content:'＋'; float:right; color:var(--gris-3); font-weight:400;
+  }
+  .desglose[open] summary::after{ content:'−'; }
+  .desglose[open] summary{ border-bottom:1px solid var(--borde); }
+  .desglose > *:last-child{ margin-bottom:14px; }
+
   /* ---------- movimientos ---------- */
 
   .lista{ max-height:360px; overflow-y:auto; }
@@ -425,6 +449,7 @@
     de: PERSONAS[0],
     a: PERSONAS[1],
     cantTrasp: '',
+    apertura: '',
     error: ''
   };
 
@@ -640,7 +665,8 @@
 
   function capturar(){
     [['f-cantidad','cantidad'], ['f-concepto','concepto'], ['f-persona','persona'],
-     ['f-de','de'], ['f-a','a'], ['f-trasp','cantTrasp']].forEach(function(par){
+     ['f-de','de'], ['f-a','a'], ['f-trasp','cantTrasp'],
+     ['f-apertura','apertura']].forEach(function(par){
       var el = document.getElementById(par[0]);
       if(el) estado[par[1]] = el.value;
     });
@@ -651,6 +677,7 @@
     estado.concepto  = '';
     estado.denom     = null;
     estado.cantTrasp = '';
+    estado.apertura  = '';
     estado.error     = '';
   }
 
@@ -695,7 +722,7 @@
 
     if(n === 0){
       h += '<div class="acciones">' +
-             '<button class="btn grande" data-ir="fondo"><span>📋</span>Abrir caja con fondo inicial</button>' +
+             '<button class="btn grande" data-ir="fondo"><span>📋</span>Abrir caja</button>' +
            '</div>';
     }else{
       h += '<div class="acciones dos">' +
@@ -742,14 +769,29 @@
     var h = vCabecera();
 
     h += '<div class="tarjeta surge"><div style="padding:24px 20px">' +
-           '<div style="text-align:center;margin-bottom:20px">' + vLogo() + '</div>' +
-           '<div class="rotulo" style="margin-bottom:16px">FONDO DE CAJA INICIAL</div>';
+           '<div style="text-align:center;margin-bottom:20px">' + vLogo() + '</div>';
+
+    if(estado.error) h += '<div class="aviso error">' + esc(estado.error) + '</div>';
+
+    h += '<div class="rotulo" style="margin-bottom:12px">CON CUÁNTO EMPEZÁIS</div>' +
+         '<div class="campo"><span class="icono">💰</span>' +
+           '<input id="f-apertura" type="number" inputmode="decimal" step="0.01" min="0" ' +
+                  'placeholder="0,00" value="' + esc(estado.apertura) + '"></div>' +
+         '<div class="ayuda">Déjalo en blanco o pon 0 si empezáis sin nada en caja.</div>' +
+
+         '<details class="desglose">' +
+           '<summary>Usar el fondo de ' + eur(TOTAL_FONDO) + '</summary>';
 
     FONDO.forEach(function(f){
       h += '<div class="fondo-linea"><span>' + esc(f[0]) + '</span><span>' + eur(f[1]) + '</span></div>';
     });
 
     h += '<div class="fondo-total"><span>TOTAL</span><span>' + eur(TOTAL_FONDO) + '</span></div>' +
+         '<button class="btn plano" data-accion="usar-fondo" style="margin-top:10px">' +
+           'Poner ' + eur(TOTAL_FONDO) + ' como importe' +
+         '</button>' +
+         '</details>' +
+
          '<div style="margin-top:18px">' +
            '<div class="rotulo" style="margin-bottom:10px">QUIÉN ABRE LA CAJA</div>' +
            '<div class="campo"><span class="icono">👤</span>' +
@@ -758,7 +800,7 @@
          '</div></div>';
 
     h += '<div style="margin-top:16px">' +
-           '<button class="btn grande" data-accion="abrir-caja"><span>📋</span>Registrar apertura</button>' +
+           '<button class="btn grande" data-accion="abrir-caja"><span>📋</span>Abrir caja</button>' +
          '</div>' +
          '<div style="text-align:center;margin-top:12px">' +
            '<button class="btn plano" data-ir="principal">Volver</button>' +
@@ -879,14 +921,26 @@
 
   function abrirCaja(){
     capturar();
+
+    /* En blanco = se abre a cero. Solo es error un número imposible. */
+    var texto = String(estado.apertura).trim().replace(',', '.');
+    var c = texto === '' ? 0 : parseFloat(texto);
+
+    if(!isFinite(c) || c < 0){
+      estado.error = 'Escribe con cuánto empezáis, o déjalo en blanco para abrir a cero.';
+      return pintar();
+    }
+
     anadir({
       tipo: 'ingreso',
-      cantidad: TOTAL_FONDO,
-      concepto: 'Apertura de caja',
+      cantidad: c,
+      concepto: c > 0 ? 'Apertura de caja' : 'Apertura de caja · sin fondo',
       persona: estado.persona,
       denom: null,
       hacia: estado.persona
     });
+
+    limpiarForm();
     estado.vista = 'principal';
     pintar();
   }
@@ -996,6 +1050,11 @@
 
     switch(el.dataset.accion){
       case 'abrir-caja':    return abrirCaja();
+      case 'usar-fondo':
+        capturar();
+        estado.apertura = String(TOTAL_FONDO);
+        estado.error = '';
+        return pintar();
       case 'guardar-mov':   return guardarMov();
       case 'guardar-trasp': return guardarTrasp();
       case 'cerrar':        return cerrar();
