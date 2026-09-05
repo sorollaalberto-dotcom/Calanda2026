@@ -849,7 +849,10 @@
             : 'Escribe el PIN del grupo. Solo hace falta la primera vez en este móvil.') +
         '</div>' +
         '<div class="campo"><span class="icono">🔑</span>' +
-          '<input id="f-pin" type="password" inputmode="numeric" autocomplete="off" ' +
+          /* Sin inputmode numérico: el PIN puede llevar letras y en el móvil
+             saldría el teclado de números. */
+          '<input id="f-pin" type="password" autocomplete="off" ' +
+                 'autocapitalize="none" autocorrect="off" spellcheck="false" ' +
                  'placeholder="PIN" value=""></div>' +
         '<div style="margin-top:14px">' +
           '<button class="btn grande" data-accion="guardar-pin">Entrar</button>' +
