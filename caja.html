@@ -248,25 +248,6 @@
   .denoms .cara{ font-size:20px; margin-bottom:2px; }
   .denoms .valor{ font-size:14px; font-weight:700; }
 
-  /* ---------- fondo inicial ---------- */
-
-  .fondo-linea{
-    display:flex; justify-content:space-between;
-    padding:10px 0;
-    border-bottom:1px solid var(--borde);
-    font-size:14px;
-  }
-  .fondo-linea:last-of-type{ border-bottom:none; }
-  .fondo-linea span:first-child{ color:var(--gris); }
-  .fondo-linea span:last-child{ font-weight:700; font-variant-numeric:tabular-nums; }
-  .fondo-total{
-    display:flex; justify-content:space-between;
-    padding:16px 0 0; margin-top:12px;
-    font-size:18px; font-weight:800;
-    border-top:2px solid var(--verde);
-  }
-  .fondo-total span:last-child{ color:var(--verde); font-variant-numeric:tabular-nums; }
-
   .marco-logo{
     background:var(--verde);
     border-radius:12px;
@@ -281,24 +262,61 @@
     margin:8px 2px 0; line-height:1.4;
   }
 
-  .desglose{
-    margin-top:16px;
+  /* ---------- arqueo de apertura ---------- */
+
+  .arqueo{
     border:1px solid var(--borde); border-radius:12px;
-    padding:0 14px;
+    overflow:hidden;
   }
-  .desglose summary{
-    cursor:pointer; list-style:none;
-    padding:12px 0; margin:0 -14px; padding-left:14px; padding-right:14px;
-    font-size:12.5px; font-weight:700; color:var(--gris);
-    letter-spacing:.3px;
+  .arqueo-grupo{
+    background:#FAF8F3;
+    padding:7px 14px;
+    font-size:10px; font-weight:700; letter-spacing:2px;
+    color:var(--gris);
+    border-bottom:1px solid var(--borde);
   }
-  .desglose summary::-webkit-details-marker{ display:none; }
-  .desglose summary::after{
-    content:'＋'; float:right; color:var(--gris-3); font-weight:400;
+  .arqueo-fila{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 14px;
+    border-bottom:1px solid var(--borde);
   }
-  .desglose[open] summary::after{ content:'−'; }
-  .desglose[open] summary{ border-bottom:1px solid var(--borde); }
-  .desglose > *:last-child{ margin-bottom:14px; }
+  .arqueo-fila:last-child{ border-bottom:none; }
+  .arqueo-fila .cara{ font-size:17px; flex:none; }
+  .arqueo-fila .den{
+    font-size:14px; font-weight:700;
+    width:42px; flex:none;
+  }
+  .arqueo-fila input{
+    flex:1; min-width:0; width:100%;
+    padding:9px 10px;
+    border:1.5px solid var(--borde); border-radius:9px;
+    font-size:16px; font-family:inherit; text-align:center;
+    color:var(--verde); background:var(--tarjeta);
+    outline:none;
+    -moz-appearance:textfield;
+  }
+  .arqueo-fila input::-webkit-outer-spin-button,
+  .arqueo-fila input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .arqueo-fila input:focus{
+    border-color:var(--verde);
+    box-shadow:0 0 0 3px rgba(23,52,37,.08);
+  }
+  .arqueo-fila .sub{
+    width:78px; flex:none; text-align:right;
+    font-size:13px; font-weight:600; color:var(--gris);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .arqueo-total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:14px 2px 0;
+    margin-top:12px;
+    border-top:2px solid var(--verde);
+    font-size:18px; font-weight:800;
+  }
+  .arqueo-total span:last-child{
+    color:var(--verde); font-variant-numeric:tabular-nums;
+  }
 
   /* ---------- movimientos ---------- */
 
@@ -410,25 +428,25 @@
 
   /* ============ datos fijos ============ */
 
-  var FONDO = [
-    ['Monedas 1€',   500],
-    ['Monedas 50c',  200],
-    ['Billetes 5€',  200],
-    ['Billetes 10€', 200],
-    ['Billetes 20€', 400]
-  ];
-  var TOTAL_FONDO = FONDO.reduce(function(a, f){ return a + f[1]; }, 0);
-
   var PERSONAS = ['Alberto','Ismael','Diego','Vega','Leyre','Erika'];
 
   var DENOMS = [
-    { v:0.5, l:'50c', cara:'🪙' },
-    { v:1,   l:'1€',  cara:'🪙' },
-    { v:5,   l:'5€',  cara:'💵' },
-    { v:10,  l:'10€', cara:'💵' },
-    { v:20,  l:'20€', cara:'💵' },
-    { v:50,  l:'50€', cara:'💵' }
+    { v:0.5, l:'50c', cara:'🪙', clase:'Monedas'  },
+    { v:1,   l:'1€',  cara:'🪙', clase:'Monedas'  },
+    { v:2,   l:'2€',  cara:'🪙', clase:'Monedas'  },
+    { v:5,   l:'5€',  cara:'💵', clase:'Billetes' },
+    { v:10,  l:'10€', cara:'💵', clase:'Billetes' },
+    { v:20,  l:'20€', cara:'💵', clase:'Billetes' },
+    { v:50,  l:'50€', cara:'💵', clase:'Billetes' }
   ];
+
+  /* Lo que soléis sacar. Son cantidades de piezas, no euros: el atajo de
+     la apertura las rellena y desde ahí se corrigen a mano. */
+  var FONDO_HABITUAL = { '0.5':400, '1':500, '5':40, '10':20, '20':20 };
+
+  var TOTAL_FONDO = DENOMS.reduce(function(a, d){
+    return a + (FONDO_HABITUAL[String(d.v)] || 0) * d.v;
+  }, 0);
 
   var CLAVE     = 'sobremesa-caja';
   var REFRESCO  = 25000;   // cada cuánto se mira si los demás han apuntado algo
@@ -449,7 +467,7 @@
     de: PERSONAS[0],
     a: PERSONAS[1],
     cantTrasp: '',
-    apertura: '',
+    conteo: {},        // cuántas piezas de cada denominación al abrir
     error: ''
   };
 
@@ -525,6 +543,29 @@
       if(lista[i].hacia) return lista[i].hacia;
     }
     return lista.length ? lista[0].persona : '';
+  }
+
+  /* ---- arqueo de apertura ---- */
+
+  function piezas(v){
+    var n = parseInt(estado.conteo[String(v)], 10);
+    return isFinite(n) && n > 0 ? n : 0;
+  }
+
+  /** Redondeo a céntimos: 0,5 × 3 y compañía arrastran error de coma flotante. */
+  function centimos(n){ return Math.round(n * 100) / 100; }
+
+  function subtotal(d){ return centimos(piezas(d.v) * d.v); }
+
+  function totalConteo(){
+    return centimos(DENOMS.reduce(function(s, d){ return s + subtotal(d); }, 0));
+  }
+
+  /** "500×1€ · 40×5€" — se guarda en la hoja como desglose de la apertura. */
+  function desgloseConteo(){
+    return DENOMS.filter(function(d){ return piezas(d.v) > 0; })
+                 .map(function(d){ return piezas(d.v) + '×' + d.l; })
+                 .join(' · ');
   }
 
   function pendiente(id){
@@ -665,10 +706,13 @@
 
   function capturar(){
     [['f-cantidad','cantidad'], ['f-concepto','concepto'], ['f-persona','persona'],
-     ['f-de','de'], ['f-a','a'], ['f-trasp','cantTrasp'],
-     ['f-apertura','apertura']].forEach(function(par){
+     ['f-de','de'], ['f-a','a'], ['f-trasp','cantTrasp']].forEach(function(par){
       var el = document.getElementById(par[0]);
       if(el) estado[par[1]] = el.value;
+    });
+
+    document.querySelectorAll('.arqueo input[data-den]').forEach(function(el){
+      estado.conteo[el.dataset.den] = el.value;
     });
   }
 
@@ -677,7 +721,7 @@
     estado.concepto  = '';
     estado.denom     = null;
     estado.cantTrasp = '';
-    estado.apertura  = '';
+    estado.conteo    = {};
     estado.error     = '';
   }
 
@@ -773,24 +817,36 @@
 
     if(estado.error) h += '<div class="aviso error">' + esc(estado.error) + '</div>';
 
-    h += '<div class="rotulo" style="margin-bottom:12px">CON CUÁNTO EMPEZÁIS</div>' +
-         '<div class="campo"><span class="icono">💰</span>' +
-           '<input id="f-apertura" type="number" inputmode="decimal" step="0.01" min="0" ' +
-                  'placeholder="0,00" value="' + esc(estado.apertura) + '"></div>' +
-         '<div class="ayuda">Déjalo en blanco o pon 0 si empezáis sin nada en caja.</div>' +
+    h += '<div class="rotulo" style="margin-bottom:6px">CON CUÁNTO EMPEZÁIS</div>' +
+         '<div class="ayuda" style="margin-bottom:14px">' +
+           'Cuenta lo que hay y pon cuántas piezas de cada una. ' +
+           'Lo que dejes vacío cuenta como cero.' +
+         '</div>' +
+         '<div class="arqueo">';
 
-         '<details class="desglose">' +
-           '<summary>Usar el fondo de ' + eur(TOTAL_FONDO) + '</summary>';
-
-    FONDO.forEach(function(f){
-      h += '<div class="fondo-linea"><span>' + esc(f[0]) + '</span><span>' + eur(f[1]) + '</span></div>';
+    var claseAnterior = '';
+    DENOMS.forEach(function(d){
+      if(d.clase !== claseAnterior){
+        h += '<div class="arqueo-grupo">' + esc(d.clase) + '</div>';
+        claseAnterior = d.clase;
+      }
+      h += '<div class="arqueo-fila">' +
+             '<span class="cara">' + d.cara + '</span>' +
+             '<span class="den">' + d.l + '</span>' +
+             '<input type="number" inputmode="numeric" step="1" min="0" placeholder="0" ' +
+                    'data-den="' + d.v + '" aria-label="Cuántas de ' + d.l + '" ' +
+                    'value="' + esc(estado.conteo[String(d.v)] || '') + '">' +
+             '<span class="sub" data-sub="' + d.v + '">' + eur(subtotal(d)) + '</span>' +
+           '</div>';
     });
 
-    h += '<div class="fondo-total"><span>TOTAL</span><span>' + eur(TOTAL_FONDO) + '</span></div>' +
-         '<button class="btn plano" data-accion="usar-fondo" style="margin-top:10px">' +
-           'Poner ' + eur(TOTAL_FONDO) + ' como importe' +
+    h += '</div>' +
+         '<div class="arqueo-total">' +
+           '<span>TOTAL</span><span data-total>' + eur(totalConteo()) + '</span>' +
+         '</div>' +
+         '<button class="btn plano" data-accion="usar-fondo" style="margin-top:6px">' +
+           'Fondo habitual · ' + eur(TOTAL_FONDO) +
          '</button>' +
-         '</details>' +
 
          '<div style="margin-top:18px">' +
            '<div class="rotulo" style="margin-bottom:10px">QUIÉN ABRE LA CAJA</div>' +
@@ -922,21 +978,16 @@
   function abrirCaja(){
     capturar();
 
-    /* En blanco = se abre a cero. Solo es error un número imposible. */
-    var texto = String(estado.apertura).trim().replace(',', '.');
-    var c = texto === '' ? 0 : parseFloat(texto);
-
-    if(!isFinite(c) || c < 0){
-      estado.error = 'Escribe con cuánto empezáis, o déjalo en blanco para abrir a cero.';
-      return pintar();
-    }
+    /* Todo vacío = se abre a cero, que es un caso legítimo. */
+    var c = totalConteo();
+    var desglose = desgloseConteo();
 
     anadir({
       tipo: 'ingreso',
       cantidad: c,
       concepto: c > 0 ? 'Apertura de caja' : 'Apertura de caja · sin fondo',
       persona: estado.persona,
-      denom: null,
+      denom: desglose || null,
       hacia: estado.persona
     });
 
@@ -1052,7 +1103,10 @@
       case 'abrir-caja':    return abrirCaja();
       case 'usar-fondo':
         capturar();
-        estado.apertura = String(TOTAL_FONDO);
+        estado.conteo = {};
+        Object.keys(FONDO_HABITUAL).forEach(function(k){
+          estado.conteo[k] = String(FONDO_HABITUAL[k]);
+        });
         estado.error = '';
         return pintar();
       case 'guardar-mov':   return guardarMov();
@@ -1060,6 +1114,22 @@
       case 'cerrar':        return cerrar();
       case 'sincronizar':   return sincronizar();
     }
+  });
+
+  /* Los subtotales y el total se actualizan en el sitio mientras se teclea.
+     Un repintado completo aquí le quitaría el foco al campo. */
+  app.addEventListener('input', function(ev){
+    var el = ev.target;
+    if(!el.dataset || !el.dataset.den) return;
+
+    estado.conteo[el.dataset.den] = el.value;
+
+    DENOMS.forEach(function(d){
+      var sub = document.querySelector('[data-sub="' + d.v + '"]');
+      if(sub) sub.textContent = eur(subtotal(d));
+    });
+    var tot = document.querySelector('[data-total]');
+    if(tot) tot.textContent = eur(totalConteo());
   });
 
   app.addEventListener('keydown', function(ev){

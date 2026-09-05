@@ -77,9 +77,20 @@ Ve a [sheets.google.com](https://sheets.google.com) y crea una hoja nueva
 
 ## Tracker de caja (`caja.html`)
 
-Página de uso interno para llevar la caja durante las fiestas: fondo
-inicial, ingresos y retiradas con denominación, traspasos entre personas y
-registro de todo lo apuntado.
+Página de uso interno para llevar la caja durante las fiestas: apertura
+contando monedas y billetes, ingresos y retiradas con denominación,
+traspasos entre personas y registro de todo lo apuntado.
+
+Al abrir se cuenta lo que hay de verdad: una fila por denominación —de 50
+céntimos a 50 euros— donde se pone cuántas piezas hay de cada una, y el
+total se calcula solo. Empieza todo a cero, así que si un día salís sin
+fondo basta con abrir sin tocar nada. El botón "Fondo habitual" rellena de
+un toque las cantidades que soléis sacar (1500 €), y desde ahí se corrigen
+las que hagan falta. El desglose del recuento se guarda en la hoja junto a
+la apertura.
+
+Si cambian las cantidades habituales, están en `caja.html` en
+`FONDO_HABITUAL`, expresadas en número de piezas por denominación.
 
 **Sin conectar a la hoja funciona igual, pero cada móvil lleva su propia
 caja por separado.** Para que todos veáis la misma caja —y para que quede
