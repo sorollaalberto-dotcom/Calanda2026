@@ -876,6 +876,8 @@
     font-size:.88rem;font-weight:300;color:var(--crema-70);
     transition:.16s ease;min-height:38px;line-height:1.25;
   }
+  .tallas{gap:2px}
+  .tallas .opcion span{padding-inline:2px;letter-spacing:.02em}
   .opcion input:checked + span{
     background:var(--ambar);color:var(--verde);font-weight:400;
   }
@@ -1260,7 +1262,8 @@
 
         <div class="campo">
           <label class="etiqueta" id="etiqueta-talla">Talla</label>
-          <div class="opciones" role="radiogroup" aria-labelledby="etiqueta-talla">
+          <div class="opciones tallas" role="radiogroup" aria-labelledby="etiqueta-talla">
+            <label class="opcion"><input type="radio" name="talla" value="XS" required><span>XS</span></label>
             <label class="opcion"><input type="radio" name="talla" value="S" required><span>S</span></label>
             <label class="opcion"><input type="radio" name="talla" value="M" required><span>M</span></label>
             <label class="opcion"><input type="radio" name="talla" value="L" required><span>L</span></label>
