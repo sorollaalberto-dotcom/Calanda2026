@@ -475,6 +475,155 @@
     line-height:1.35;
   }
 
+  /* ── LA IDEA CON FOTO ───────────────────── */
+  .idea{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    row-gap:clamp(28px,5vh,44px);
+  }
+  .idea .titulo-editorial{margin-bottom:0}
+  .idea-foto{
+    width:min(100%,400px);
+    justify-self:center;
+  }
+  .arco{
+    aspect-ratio:4/5;
+    border-radius:999px 999px 18px 18px;
+    overflow:hidden;
+    background:var(--verde-alto);
+    box-shadow:0 0 0 1px var(--crema-18), 0 28px 60px -24px rgba(0,0,0,.55);
+  }
+  .arco img{
+    width:100%;height:100%;display:block;
+    object-fit:cover;object-position:42% 55%;
+    transform:scale(1.08);
+    transition:transform 1.6s cubic-bezier(.2,.7,.2,1);
+  }
+  .idea-foto.dentro .arco img{transform:none}
+  .idea-foto figcaption{
+    margin-top:16px;
+    text-align:center;
+    font-size:.64rem;
+    letter-spacing:.32em;
+    color:var(--crema-45);
+  }
+  @media(min-width:860px){
+    .idea{
+      grid-template-columns:minmax(0,1fr) 360px;
+      grid-template-areas:"cabeza foto" "cuerpo foto";
+      column-gap:clamp(40px,6vw,72px);
+      align-items:start;
+    }
+    .idea-cabeza{grid-area:cabeza}
+    .idea-cuerpo{grid-area:cuerpo}
+    .idea-foto{grid-area:foto;position:sticky;top:92px;width:100%}
+  }
+
+  /* ── PARA LLEVARTE PUESTO ───────────────── */
+  .puesta{
+    background:var(--crema);
+    color:var(--verde);
+    padding:clamp(64px,12vh,120px) 0;
+  }
+  .puesta .seccion-eyebrow{color:#A0614B}
+  .puesta .titulo-editorial{color:var(--verde)}
+  .puesta .titulo-editorial em{color:#A0614B}
+  .puesta-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:clamp(20px,3vw,32px);
+  }
+  .prenda-foto{
+    border-radius:20px;
+    overflow:hidden;
+    background:#6f6a66;
+    box-shadow:0 24px 50px -28px rgba(23,52,37,.55);
+  }
+  .prenda-foto img{
+    width:100%;height:auto;display:block;
+    aspect-ratio:1024/617;object-fit:cover;
+    transition:transform 1.2s cubic-bezier(.2,.7,.2,1);
+  }
+  .prenda:hover .prenda-foto img{transform:scale(1.03)}
+  .prenda-texto{
+    display:flex;align-items:baseline;gap:clamp(12px,2vw,18px);
+    border-top:2px solid var(--verde);
+    margin-top:clamp(18px,3vh,26px);
+    padding-top:clamp(14px,2.2vh,20px);
+  }
+  .puesta .paso-num{
+    font-family:var(--serif);
+    font-size:clamp(1.6rem,4.5vw,2.2rem);
+    font-style:italic;
+    line-height:1;
+    color:var(--verde);
+    margin-bottom:0;
+    flex-shrink:0;
+  }
+  .puesta .paso-titulo{
+    font-size:.72rem;
+    letter-spacing:.14em;
+    font-weight:700;
+    color:var(--verde);
+    margin-bottom:6px;
+    line-height:1.4;
+  }
+  .puesta .paso-desc{
+    font-size:clamp(.92rem,.86rem + .3vw,1.05rem);
+    line-height:1.5;
+    color:rgba(23,52,37,.72);
+    margin-bottom:0;
+    max-width:24em;
+  }
+  .puesta .hecho-a-mano{
+    margin-top:12px;
+    font-size:.62rem;
+    letter-spacing:.3em;
+    color:#A0614B;
+    margin-bottom:0;
+  }
+
+  .colgante{
+    display:grid;
+    grid-template-columns:clamp(88px,26vw,120px) minmax(0,1fr);
+    align-items:center;
+    column-gap:clamp(18px,5vw,32px);
+    background:#E7D2A8;
+    border-radius:20px;
+    padding:0 clamp(20px,5vw,32px) clamp(24px,4vh,32px);
+    overflow:hidden;
+  }
+  .colgante-foto{
+    transform-origin:50% 0;
+    animation:balanceo 5.5s ease-in-out infinite alternate;
+  }
+  .colgante-foto img{
+    width:100%;height:auto;display:block;
+    mix-blend-mode:multiply;
+  }
+  .colgante .prenda-texto{margin-top:0}
+  @keyframes balanceo{
+    from{transform:rotate(-2.2deg)}
+    to{transform:rotate(2.2deg)}
+  }
+  @media(min-width:760px){
+    .puesta-grid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+    .colgante{
+      grid-template-columns:minmax(0,1fr);
+      align-content:space-between;
+      justify-items:center;
+      row-gap:20px;
+      padding:0 clamp(20px,2.4vw,28px) clamp(22px,2.6vw,30px);
+    }
+    .colgante-foto{width:104px}
+    .colgante .prenda-texto{width:100%}
+    .prenda-foto img{aspect-ratio:4/3;object-position:64% 50%}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .colgante-foto{animation:none}
+    .arco img{transform:none;transition:none}
+  }
+
   /* ── CIERRE ─────────────────────────────── */
   .cierre{
     padding:clamp(80px,14vh,140px) 0;
@@ -742,18 +891,30 @@
 </header>
 
 <!-- LA IDEA -->
-<section id="la-idea" class="marco">
-  <p class="seccion-eyebrow surge">LA IDEA</p>
-  <h2 class="titulo-editorial surge">Volver a<br>estar ahí.</h2>
+<section id="la-idea" class="marco-ancho idea">
+  <div class="idea-cabeza">
+    <p class="seccion-eyebrow surge">LA IDEA</p>
+    <h2 class="titulo-editorial surge">Volver a<br>estar ahí.</h2>
+  </div>
 
-  <p class="surge fuerte">Antes no teníamos tanta prisa. Te sentabas a comer y no estabas mirando el móvil. No estabas pendiente de la hora ni pensando en qué venía después.</p>
-  <p class="surge">Terminabas de comer y llegaba el café. El café se convertía en una copa. Alguien proponía una partida. Se acercaba otra persona. Empezaban las conversaciones. Llegaba otra ronda.</p>
+  <figure class="idea-foto surge">
+    <div class="arco">
+      <img src="sifon.jpg" width="1178" height="1435" loading="lazy" decoding="async"
+           alt="Un sifón verde de La Sobremesa junto a un vermú con naranja y un vaso de aceitunas, sobre una mesa verde">
+    </div>
+    <figcaption>RECUPEREMOS LA ESENCIA</figcaption>
+  </figure>
 
-  <p class="cita-ambar surge">Y cuando parecía que ya tocaba irse, siempre aparecía alguien diciendo: «¿Nos quedamos un rato más?»</p>
+  <div class="idea-cuerpo">
+    <p class="surge fuerte">Antes no teníamos tanta prisa. Te sentabas a comer y no estabas mirando el móvil. No estabas pendiente de la hora ni pensando en qué venía después.</p>
+    <p class="surge">Terminabas de comer y llegaba el café. El café se convertía en una copa. Alguien proponía una partida. Se acercaba otra persona. Empezaban las conversaciones. Llegaba otra ronda.</p>
 
-  <div class="dos-cols surge">
-    <p>Precisamente ahí estaba la gracia. No hacía falta tenerlo todo planificado. El plan era estar juntos.</p>
-    <p>La Sobremesa es ese momento en el que dejas de mirar el reloj y te dejas llevar. Una cosa lleva a la otra porque estás a gusto.</p>
+    <p class="cita-ambar surge">Y cuando parecía que ya tocaba irse, siempre aparecía alguien diciendo: «¿Nos quedamos un rato más?»</p>
+
+    <div class="dos-cols surge">
+      <p>Precisamente ahí estaba la gracia. No hacía falta tenerlo todo planificado. El plan era estar juntos.</p>
+      <p>La Sobremesa es ese momento en el que dejas de mirar el reloj y te dejas llevar. Una cosa lleva a la otra porque estás a gusto.</p>
+    </div>
   </div>
 </section>
 
@@ -826,6 +987,45 @@
   </div>
 
   <p class="liando surge">Exactamente como ocurría antes. Se te iba liando poco a poco. Y precisamente ahí estaba la gracia.</p>
+</section>
+
+<!-- PARA LLEVARTE PUESTO -->
+<section id="puesta" class="puesta">
+  <div class="marco-ancho">
+    <p class="seccion-eyebrow surge">PARA LLEVARTE PUESTO</p>
+    <h2 class="titulo-editorial surge">Llévatela<br><em>puesta.</em></h2>
+
+    <div class="puesta-grid">
+      <article class="prenda surge">
+        <div class="prenda-foto">
+          <img src="camisetas.jpg" width="1024" height="617" loading="lazy" decoding="async"
+               alt="Dos camisetas grises de La Sobremesa tendidas al sol: por delante el logo, por detrás la plaza y el lema Recuperemos la esencia">
+        </div>
+        <div class="prenda-texto">
+          <p class="paso-num">01</p>
+          <div>
+            <p class="paso-titulo">LA CAMISETA</p>
+            <p class="paso-desc">La Sobremesa por delante. Por detrás, la plaza y un recado: recuperemos la esencia.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="colgante surge">
+        <div class="colgante-foto">
+          <img src="lanyard.jpg" width="460" height="1600" loading="lazy" decoding="async"
+               alt="Lanyard de cuadros rojos y negros con La Sobremesa bordado en blanco">
+        </div>
+        <div class="prenda-texto">
+          <p class="paso-num">02</p>
+          <div>
+            <p class="paso-titulo">EL LANYARD</p>
+            <p class="paso-desc">No todo son camisetas. Tenemos lanyards. Tú decides si vienes a por uno.</p>
+            <p class="hecho-a-mano">HECHOS A MANO</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
 </section>
 
 <!-- CIERRE -->
