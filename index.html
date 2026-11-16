@@ -680,6 +680,16 @@
     margin-bottom:0;
     max-width:24em;
   }
+  .enlace-compra{
+    display:inline-block;margin-top:14px;
+    font-size:.68rem;letter-spacing:.24em;font-weight:500;
+    color:#A0614B;text-decoration:none;
+    border-bottom:1px solid currentColor;padding-bottom:3px;
+    transition:color .2s;
+  }
+  .enlace-compra span{display:inline-block;transition:transform .25s ease}
+  .enlace-compra:hover{color:var(--verde)}
+  .enlace-compra:hover span{transform:translateX(4px)}
   .puesta .hecho-a-mano{
     margin-top:12px;
     font-size:.62rem;
@@ -841,15 +851,15 @@
     margin-bottom:12px;letter-spacing:.02em;color:var(--crema);
   }
 
-  input[type="text"]{
+  input[type="text"],input[type="tel"]{
     width:100%;padding:14px 16px;
     border:1px solid var(--crema-18);border-radius:12px;
     background:rgba(0,0,0,.15);color:var(--crema);
     font-size:1rem;font-family:inherit;font-weight:300;outline:none;
     transition:border-color .18s ease,background .18s ease;
   }
-  input[type="text"]::placeholder{color:var(--crema-45)}
-  input[type="text"]:focus{border-color:var(--ambar);background:rgba(0,0,0,.22)}
+  input[type="text"]::placeholder,input[type="tel"]::placeholder{color:var(--crema-45)}
+  input[type="text"]:focus,input[type="tel"]:focus{border-color:var(--ambar);background:rgba(0,0,0,.22)}
 
   .opciones{
     display:flex;gap:6px;
@@ -1012,10 +1022,10 @@
     <a href="#la-idea" onclick="cerrarMenu()">La esencia</a>
     <a href="#recuperar" onclick="cerrarMenu()">Recuperar</a>
     <a href="#el-yeye" onclick="cerrarMenu()">El Yeye</a>
-    <a href="#sorteo" onclick="cerrarMenu()">Apúntate</a>
+    <a href="#camiseta" onclick="cerrarMenu()">Camiseta</a>
   </nav>
   <div class="menu-cta">
-    <a href="#sorteo" class="btn-sorteo" onclick="cerrarMenu()">Apúntate al sorteo</a>
+    <a href="#camiseta" class="btn-sorteo" onclick="cerrarMenu()">Compra tu camiseta</a>
   </div>
 </div>
 
@@ -1033,7 +1043,7 @@
   <p class="hero-sub surge">El plan que empieza con un vermú y termina cuando nadie quiere irse.</p>
 
   <div class="hero-ctas surge">
-    <a href="#sorteo" class="btn-sorteo">Apúntate al sorteo</a>
+    <a href="#camiseta" class="btn-sorteo">Compra tu camiseta</a>
     <a href="#la-idea" class="link-plan">DESCUBRE EL PLAN ↓</a>
   </div>
   <span class="pista" aria-hidden="true"></span>
@@ -1163,6 +1173,7 @@
           <div>
             <p class="paso-titulo">LA CAMISETA</p>
             <p class="paso-desc">La Sobremesa por delante. Por detrás, la plaza y un recado: recuperemos la esencia.</p>
+            <a href="#camiseta" class="enlace-compra">COMPRA LA TUYA <span aria-hidden="true">→</span></a>
           </div>
         </div>
       </article>
@@ -1190,7 +1201,7 @@
   <svg class="gira surge" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 10V90M10 50H90M22 22L78 78M78 22L22 78" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/></svg>
   <p class="seccion-eyebrow surge">TODAVÍA NO NOS VAMOS</p>
   <p class="grande surge">Lo bueno<br><em>empieza después.</em></p>
-  <a href="#sorteo" class="btn-sorteo surge">Apúntate al sorteo</a>
+  <a href="#camiseta" class="btn-sorteo surge">Compra tu camiseta</a>
 </section>
 
 <!-- EL YEYE -->
@@ -1221,19 +1232,19 @@
   </div>
 </section>
 
-<!-- SORTEO -->
-<section id="sorteo" class="marco-ancho seccion-sorteo">
+<!-- CAMISETA -->
+<section id="camiseta" class="marco-ancho seccion-sorteo">
   <div class="sorteo-bloque surge">
-    <p class="seccion-eyebrow">LA SOBREMESA · PRÓXIMA EDICIÓN</p>
-    <h2>Apúntate<br><em>al sorteo.</em></h2>
-    <p class="sub">Déjanos tus datos para entrar en el sorteo y ayúdanos a organizar el día.</p>
+    <p class="seccion-eyebrow">LA SOBREMESA · LA CAMISETA</p>
+    <h2>Compra<br><em>tu camiseta.</em></h2>
+    <p class="sub">Elige tu talla y déjanos tus datos para pedir la tuya.</p>
 
     <div class="tarjeta">
-      <div id="ya-participa" style="display:none;text-align:center;padding:12px 0 20px">
-        <p style="font-size:.92rem;color:var(--ambar);font-weight:400;margin-bottom:4px">Ya participaste con este nombre.</p>
-        <p style="font-size:.82rem;color:var(--crema-70)">Si quieres cambiar alguna respuesta, modifícala y envía de nuevo.</p>
+      <div id="ya-pedido" style="display:none;text-align:center;padding:12px 0 20px">
+        <p style="font-size:.92rem;color:var(--ambar);font-weight:400;margin-bottom:4px">Ya tenemos tu pedido.</p>
+        <p style="font-size:.82rem;color:var(--crema-70)">Si quieres otra camiseta, elige la talla y envía de nuevo.</p>
       </div>
-      <form id="form-sorteo" novalidate>
+      <form id="form-camiseta" novalidate>
 
         <div class="campo">
           <label class="etiqueta" for="nombre">Nombre</label>
@@ -1248,46 +1259,30 @@
         </div>
 
         <div class="campo">
-          <label class="etiqueta">¿Asistes a la fiesta?</label>
-          <div class="opciones" role="radiogroup" aria-label="¿Asistes a la fiesta?">
-            <label class="opcion">
-              <input type="radio" name="asiste" value="Sí" required>
-              <span>Sí</span>
-            </label>
-            <label class="opcion">
-              <input type="radio" name="asiste" value="No" required>
-              <span>No</span>
-            </label>
+          <label class="etiqueta" id="etiqueta-talla">Talla</label>
+          <div class="opciones" role="radiogroup" aria-labelledby="etiqueta-talla">
+            <label class="opcion"><input type="radio" name="talla" value="S" required><span>S</span></label>
+            <label class="opcion"><input type="radio" name="talla" value="M" required><span>M</span></label>
+            <label class="opcion"><input type="radio" name="talla" value="L" required><span>L</span></label>
+            <label class="opcion"><input type="radio" name="talla" value="XL" required><span>XL</span></label>
+            <label class="opcion"><input type="radio" name="talla" value="XXL" required><span>XXL</span></label>
           </div>
-          <div class="campo-error" id="error-asiste">Elige una opción.</div>
+          <div class="campo-error" id="error-talla">Elige tu talla.</div>
         </div>
 
         <div class="campo">
-          <label class="etiqueta">¿Te quedas a cenar?</label>
-          <div class="opciones" role="radiogroup" aria-label="¿Te quedas a cenar?">
-            <label class="opcion">
-              <input type="radio" name="cena" value="Sí" required>
-              <span>Sí</span>
-            </label>
-            <label class="opcion">
-              <input type="radio" name="cena" value="No" required>
-              <span>No</span>
-            </label>
-            <label class="opcion">
-              <input type="radio" name="cena" value="Aún no lo sé" required>
-              <span>Aún no lo sé</span>
-            </label>
-          </div>
-          <div class="campo-error" id="error-cena">Elige una opción.</div>
+          <label class="etiqueta" for="movil">Móvil</label>
+          <input type="tel" id="movil" name="movil" placeholder="600 000 000" maxlength="20" inputmode="tel" autocomplete="tel" required>
+          <div class="campo-error" id="error-movil">Escribe un móvil válido.</div>
         </div>
 
-        <button type="submit" id="btn-enviar">Enviar y participar</button>
+        <button type="submit" id="btn-enviar">Pedir mi camiseta</button>
 
         <div class="mensaje" id="mensaje"></div>
       </form>
     </div>
 
-    <p class="sorteo-privacidad">Usaremos estos datos únicamente para organizar la experiencia y comunicarte información de La Sobremesa.</p>
+    <p class="sorteo-privacidad">Usaremos estos datos únicamente para gestionar tu pedido.</p>
   </div>
 </section>
 
@@ -1307,39 +1302,36 @@
 <!-- BARRA INFERIOR -->
 <div class="barra-inferior" id="barra">
   <span class="pregunta">¿NOS QUEDAMOS?</span>
-  <a href="#sorteo" class="btn-sorteo">Apúntate al sorteo</a>
+  <a href="#camiseta" class="btn-sorteo">Compra tu camiseta</a>
 </div>
 
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0aVuWbeX2yDEinbCwkYfUCIquFZAo6QKLvQhd5nlrytnkSqLjd-Gqo3xO4nJRmt4_/exec';
 
-  const formSorteo = document.getElementById('form-sorteo');
+  const formCamiseta = document.getElementById('form-camiseta');
   const btnEnviar = document.getElementById('btn-enviar');
   const mensaje = document.getElementById('mensaje');
-  const errorNombre = document.getElementById('error-nombre');
-  const errorApellidos = document.getElementById('error-apellidos');
-  const errorAsiste = document.getElementById('error-asiste');
-  const errorCena = document.getElementById('error-cena');
-  const yaParticipa = document.getElementById('ya-participa');
+  const yaPedido = document.getElementById('ya-pedido');
+  const errores = {
+    nombre: document.getElementById('error-nombre'),
+    apellidos: document.getElementById('error-apellidos'),
+    talla: document.getElementById('error-talla'),
+    movil: document.getElementById('error-movil')
+  };
 
-  let datosGuardados = null;
+  let pedidoGuardado = null;
   try {
-    const raw = localStorage.getItem('sobremesa-datos');
-    if (raw) datosGuardados = JSON.parse(raw);
+    const raw = localStorage.getItem('sobremesa-camiseta');
+    if (raw) pedidoGuardado = JSON.parse(raw);
   } catch(e) {}
 
-  if (datosGuardados) {
-    document.getElementById('nombre').value = datosGuardados.nombre || '';
-    document.getElementById('apellidos').value = datosGuardados.apellidos || '';
-    if (datosGuardados.asiste) {
-      const r = formSorteo.querySelector('input[name="asiste"][value="'+datosGuardados.asiste+'"]');
-      if (r) r.checked = true;
-    }
-    if (datosGuardados.cena) {
-      const r = formSorteo.querySelector('input[name="cena"][value="'+datosGuardados.cena+'"]');
-      if (r) r.checked = true;
-    }
-    yaParticipa.style.display = 'block';
+  if (pedidoGuardado) {
+    document.getElementById('nombre').value = pedidoGuardado.nombre || '';
+    document.getElementById('apellidos').value = pedidoGuardado.apellidos || '';
+    document.getElementById('movil').value = pedidoGuardado.movil || '';
+    const r = formCamiseta.querySelector('input[name="talla"][value="' + pedidoGuardado.talla + '"]');
+    if (r) r.checked = true;
+    yaPedido.style.display = 'block';
   }
 
   function mostrarMensaje(texto, tipo) {
@@ -1347,57 +1339,62 @@
     mensaje.className = 'mensaje ' + tipo;
   }
 
-  formSorteo.addEventListener('submit', async (evento) => {
+  formCamiseta.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     mensaje.className = 'mensaje';
-    errorNombre.style.display = 'none';
-    errorApellidos.style.display = 'none';
-    errorAsiste.style.display = 'none';
-    errorCena.style.display = 'none';
+    Object.values(errores).forEach(el => { el.style.display = 'none'; });
 
-    const datos = new FormData(formSorteo);
+    const datos = new FormData(formCamiseta);
     const nombre = datos.get('nombre').trim();
     const apellidos = datos.get('apellidos').trim();
-    const asiste = datos.get('asiste');
-    const cena = datos.get('cena');
+    const talla = datos.get('talla');
+    const movil = datos.get('movil').trim();
+    const digitos = movil.replace(/\D/g, '');
 
-    let valido = true;
-    if (!nombre) { errorNombre.style.display = 'block'; valido = false; }
-    if (!apellidos) { errorApellidos.style.display = 'block'; valido = false; }
-    if (!asiste) { errorAsiste.style.display = 'block'; valido = false; }
-    if (!cena) { errorCena.style.display = 'block'; valido = false; }
-    if (!valido) return;
+    const fallos = {
+      nombre: !nombre,
+      apellidos: !apellidos,
+      talla: !talla,
+      movil: digitos.length < 9 || digitos.length > 13
+    };
+    Object.keys(fallos).forEach(k => { if (fallos[k]) errores[k].style.display = 'block'; });
+    if (Object.values(fallos).some(Boolean)) return;
 
-    const nuevos = { nombre, apellidos, asiste, cena };
-    if (datosGuardados &&
-        datosGuardados.nombre === nombre &&
-        datosGuardados.apellidos === apellidos &&
-        datosGuardados.asiste === asiste &&
-        datosGuardados.cena === cena) {
-      mostrarMensaje('Ya estás apuntado con estos mismos datos.', 'error');
+    const nuevo = { nombre, apellidos, talla, movil };
+    if (pedidoGuardado &&
+        pedidoGuardado.nombre === nombre &&
+        pedidoGuardado.apellidos === apellidos &&
+        pedidoGuardado.talla === talla &&
+        pedidoGuardado.movil === movil) {
+      mostrarMensaje('Ya tenemos este mismo pedido.', 'error');
       return;
     }
 
-    if (SCRIPT_URL.includes('PEGA_AQUI_TU_ID_DE_DESPLIEGUE')) {
-      mostrarMensaje('Falta configurar la URL de Google Apps Script.', 'error');
-      return;
-    }
+    const envio = new FormData();
+    envio.append('tipo', 'camiseta');
+    envio.append('nombre_solo', nombre);
+    envio.append('apellidos', apellidos);
+    envio.append('talla', talla);
+    envio.append('movil', movil);
+    // El script antiguo solo guarda nombre, asiste y cena: van rellenos para que no se pierda nada.
+    envio.append('nombre', nombre + ' ' + apellidos);
+    envio.append('asiste', 'Camiseta talla ' + talla);
+    envio.append('cena', 'Móvil ' + movil);
 
     btnEnviar.disabled = true;
     btnEnviar.textContent = 'Enviando...';
 
     try {
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: datos });
-      const yaEstaba = !!datosGuardados;
-      try { localStorage.setItem('sobremesa-datos', JSON.stringify(nuevos)); } catch(e) {}
-      datosGuardados = nuevos;
-      yaParticipa.style.display = 'block';
-      mostrarMensaje(yaEstaba ? 'Respuestas actualizadas.' : 'Gracias, ya estás dentro del sorteo.', 'ok');
+      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: envio });
+      try { localStorage.setItem('sobremesa-camiseta', JSON.stringify(nuevo)); } catch(e) {}
+      pedidoGuardado = nuevo;
+      yaPedido.style.display = 'block';
+      mostrarMensaje('Pedido recibido. ¡Gracias!', 'ok');
     } catch (e) {
       mostrarMensaje('No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.', 'error');
     } finally {
       btnEnviar.disabled = false;
-      btnEnviar.textContent = 'Enviar y participar';
+      btnEnviar.textContent = 'Pedir mi camiseta';
     }
   });
 
@@ -1421,12 +1418,12 @@
   alDesplazar();
 
   const barra = document.getElementById('barra');
-  const fuera = { portada: true, sorteo: false };
+  const fuera = { portada: true, pedido: false };
   const vigia = new IntersectionObserver((entradas) => {
     entradas.forEach(e => { fuera[e.target.dataset.zona] = e.isIntersecting; });
-    barra.classList.toggle('visible', !fuera.portada && !fuera.sorteo);
+    barra.classList.toggle('visible', !fuera.portada && !fuera.pedido);
   }, { threshold: 0, rootMargin: '-15% 0px -15% 0px' });
-  [['.portada','portada'],['#sorteo','sorteo']].forEach(([sel, zona]) => {
+  [['.portada','portada'],['#camiseta','pedido']].forEach(([sel, zona]) => {
     const el = document.querySelector(sel);
     el.dataset.zona = zona;
     vigia.observe(el);
