@@ -1392,7 +1392,7 @@
       try { localStorage.setItem('sobremesa-camiseta', JSON.stringify(nuevo)); } catch(e) {}
       pedidoGuardado = nuevo;
       yaPedido.style.display = 'block';
-      mostrarMensaje('¡Pedido recibido! Te contactaremos por el móvil para confirmarlo.', 'ok');
+      mostrarMensaje('¡Pedido recibido! Te contactaremos por WhatsApp para confirmarlo.', 'ok');
     } catch (e) {
       mostrarMensaje('No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.', 'error');
     } finally {
